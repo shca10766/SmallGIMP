@@ -1,9 +1,4 @@
 #include <opencv2/opencv.hpp>
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "highgui.h"
-#include <stdlib.h>
-#include <stdio.h>
 
 using namespace cv;
 using namespace std;
@@ -32,8 +27,8 @@ int main( int argc, char** argv )
   { return -1; }
 
   /// Create windows
-  namedWindow( "Erosion Demo", CV_WINDOW_AUTOSIZE );
-  namedWindow( "Dilation Demo", CV_WINDOW_AUTOSIZE );
+  namedWindow( "Erosion Demo");
+  namedWindow( "Dilation Demo");
   cvMoveWindow( "Dilation Demo", src.cols, 0 );
 
   /// Create Erosion Trackbar
