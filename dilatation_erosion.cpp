@@ -26,7 +26,7 @@ void Dilation( int, void* );
 int main( int argc, char** argv )
 {
   /// Load an image
-  src = imread( "van_gogh.jpg", IMREAD_COLOR );
+  src = imread( "img/van_gogh.jpg", IMREAD_COLOR );
 
   if( !src.data )
   { return -1; }
