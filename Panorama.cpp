@@ -21,8 +21,8 @@ vector<Mat> imgs;
 
 int main(int argc, char* argv[])
 {
-	Mat image1 = imread("D:\\Downloads\\part1.jpg");
-	Mat image2 = imread("D:\\Downloads\\part2.jpg");
+	Mat image1 = imread("img/left.jpeg");
+	Mat image2 = imread("img/right.jpeg");
 	// Get all the images that need to be  
 	// stitched as arguments from command line  
 		if (image1.empty() || image2.empty())
