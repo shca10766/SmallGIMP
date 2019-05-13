@@ -41,6 +41,7 @@ void Frame::addSection(Section* section)
 
 void Frame::frameToMat(Mat& dest)
 {
+	frameButtonList.clear();
 	Mat img;
 	Mat centerImage;
 	int x = 0;
@@ -51,18 +52,21 @@ void Frame::frameToMat(Mat& dest)
 	{
 		resize(s->imageBackground, s->imageBackground, Size(windowSize.width, s->imageBackground.rows));
 		s->imageBackground.copyTo(dest(Rect(x, y, s->imageBackground.cols, s->imageBackground.rows)));
+		s->showAllButton(frameButtonList, x, y, s->imageBackground.size());
 		y += s->imageBackground.rows;
 	}
 	for(auto s : leftColumn)
 	{
 		resize(s->imageBackground, s->imageBackground, Size(s->imageBackground.cols, windowSize.height-y));
 		s->imageBackground.copyTo(dest(Rect(x, y, s->imageBackground.cols, s->imageBackground.rows)));
+		s->showAllButton(frameButtonList, x, y, s->imageBackground.size());
 		x += s->imageBackground.cols;
 	}
 	for(auto s : rightColumn)
 	{
 		resize(s->imageBackground, s->imageBackground, Size(s->imageBackground.cols, windowSize.height - y));
 		s->imageBackground.copyTo(dest(Rect(windowSize.width - x2 - s->imageBackground.cols, y, s->imageBackground.cols, s->imageBackground.rows)));
+		s->showAllButton(frameButtonList, x, y, s->imageBackground.size());
 		x2 += s->imageBackground.cols;
 	}
 	y2 = y;
@@ -78,7 +82,7 @@ void Frame::frameToMat(Mat& dest)
 			resize(s->imageBackground, s->imageBackground, Size(windowSize.width - x - x2, windowSize.height-y-y2));
 			s->imageBackground.copyTo(dest(Rect(x, y2, s->imageBackground.cols, s->imageBackground.rows)));
 			s->getCurrentImage(centerImage);
-			resize(centerImage, centerImage, Size(s->imageBackground.cols * 0.75, s->imageBackground.rows *0.75));
+			resize(centerImage, centerImage, Size(s->imageBackground.cols * 0.75, s->imageBackground.rows * 0.75));
 			centerImage.copyTo(dest(Rect(x + 0.125*s->imageBackground.cols, y2 + 0.125*s->imageBackground.rows, centerImage.cols, centerImage.rows)));
 			image = dest(Rect(x + 0.125*s->imageBackground.cols, y2 + 0.125*s->imageBackground.rows, centerImage.cols, centerImage.rows));
 			s->setCurrentImage(image);
@@ -90,6 +94,19 @@ void Frame::frameToMat(Mat& dest)
 	//	s->imageBackground.copyTo(dest(Rect(0, y, s->imageBackground.cols, s->imageBackground.rows)));
 	//	y += s->imageBackground.rows;
 	//}
+
+	screen = dest;
 	return;
+}
+
+void Frame::updateAllbuttons()
+{
+	for (auto b : frameButtonList)
+	{
+		if (cvui::button(screen, b->x, b->y, b->width, b->height, b->name))
+		{
+			b->doFunction(image);
+		}
+	}
 }
 

@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+#include "cvui.h"
+
 #include "Section.h"
 
 
@@ -20,11 +22,15 @@ private:
 	vector<Section*> rightColumn;
 	vector<Section*> footer;
 
+	vector<Button*> frameButtonList;
+
 	Size windowSize;
 
 public:
 
 	Mat image;
+
+	Mat screen;
 
 	Frame();
 	Frame(Size _windowSize);
@@ -33,6 +39,8 @@ public:
 	void addSection(Section* section);
 
 	void frameToMat(Mat& dest);
+
+	void updateAllbuttons();
 
 
 

@@ -1,3 +1,4 @@
+#pragma once
 /*
  A (very) simple UI lib built on top of OpenCV drawing primitives.
  Version: 2.7.0
