@@ -6,7 +6,7 @@ Button::Button()
 
 }
 
-Button::Button(int _x, int _y, int _width, int _height, string _name, void(*_pointerfunc)(Mat& img))
+Button::Button(int _x, int _y, int _width, int _height, string _name, void(*_pointerfunc)(Frame& frame))
 {
 	automatic = false;
 	name = _name;
@@ -18,7 +18,7 @@ Button::Button(int _x, int _y, int _width, int _height, string _name, void(*_poi
 	height = _height;
 }
 
-Button::Button(string _name, void(*_pointerfunc)(Mat& img))
+Button::Button(string _name, void(*_pointerfunc)(Frame& frame))
 {
 	automatic = true;
 	name = _name;
@@ -32,9 +32,9 @@ Button::~Button()
 {
 }
 
-void Button::doFunction(Mat & img)
+void Button::doFunction(Frame & frame)
 {
-	(*pointerfunc)(img);
+	(*pointerfunc)(frame);
 }
 
 void Button::setPosition(int _x, int _y, int _width, int _height)

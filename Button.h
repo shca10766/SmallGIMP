@@ -2,15 +2,18 @@
 #include "opencv2/core.hpp"
 #include <string>
 #include "imageFunction.h"
+#include "frame.h"
 
 using namespace std;
 using namespace cv;
+
+class Frame;
 
 class Button
 {
 private:
 	bool automatic;
-	void(*pointerfunc)(Mat& img);
+	void(*pointerfunc)(Frame& frame);
 
 
 public:
@@ -22,11 +25,11 @@ public:
 	string name;
 
 	Button();
-	Button(int _x, int _y, int _width, int _height, string _name,void(*_pointerfunc)(Mat& img));
-	Button(string name,void(*_pointerfunc)(Mat& img));
+	Button(int _x, int _y, int _width, int _height, string _name,void(*_pointerfunc)(Frame& frame));
+	Button(string name,void(*_pointerfunc)(Frame& frame));
 	~Button();
 
-	void doFunction(Mat& img);
+	void doFunction(Frame& frame);
 
 	void setPosition(int _x, int _y, int _width, int _height);
 

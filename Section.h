@@ -8,11 +8,13 @@
 using namespace cv;
 using namespace std;
 
+class Button;
+
 class Section
 {
 public:
 	Mat imageBackground;
-	int type; // 0: image, 1: header, 2: leftColumn, 3: nav, 4:rightColumn, 5: footer
+	int type; // 0: header, 1: footer, 2: leftColumn, 3: rightColumn, 4:contentHeader, 5: contentFooter
 	Size size;
 	bool scalable;
 	vector<Button*> buttonList;
@@ -24,6 +26,7 @@ public:
 	Section();
 	Section(Mat _imageBackground, int _type);
 	Section(Mat _imageBackground, int _type,bool _containImages);
+	Section(int _size, int _type, Scalar _color);
 	Section(Size size,Scalar color, int _type);
 	Section(string path, int _type);
 	~Section();
