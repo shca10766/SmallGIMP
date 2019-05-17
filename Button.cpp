@@ -49,3 +49,28 @@ bool Button::isAutomatic()
 {
 	return automatic;
 }
+
+bool Button::isInside(int _x, int _y)
+{
+	return ((_x > x) && (_x < x + width) && (_y > y) && (_y < y + height));
+}
+
+Size Button::getSize()
+{
+	return Size(width,height);
+}
+
+int Button::getX()
+{
+	return x;
+}
+
+int Button::getY()
+{
+	return y;
+}
+
+String Button::getName()
+{
+	return name;
+}

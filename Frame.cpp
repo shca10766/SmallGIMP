@@ -93,7 +93,24 @@ void Frame::frameToMat()
 		resize(s->imageBackground, s->imageBackground, Size(windowSize.width - x - x2, s->imageBackground.rows));
 		s->imageBackground.copyTo(screen(Rect(x, windowSize.height - y2 - s->imageBackground.rows, s->imageBackground.cols, s->imageBackground.rows)));
 		s->showAllButton(frameButtonList, x, windowSize.height - y2 - s->imageBackground.rows, s->imageBackground.size());
-		y += s->imageBackground.rows;
+		y2 += s->imageBackground.rows;
+	}
+
+	Mat buttonMat = Mat(100, 100, CV_8UC3, Scalar(120, 120, 120));
+	copyMakeBorder(buttonMat, buttonMat, 5, 5, 5, 5, BORDER_CONSTANT, Scalar(10, 10, 10));
+
+	double scale = 0.4;
+	int font = cv::FONT_HERSHEY_SIMPLEX;
+	int thickness = 1.5;
+	int* baseline=0;
+	Size textSize;
+	for (auto b : frameButtonList)
+	{
+		cout << b->getSize().width << endl;
+		resize(buttonMat,buttonMat,b->getSize());
+		buttonMat.copyTo(screen(Rect(b->getX(), b->getY(), buttonMat.cols, buttonMat.rows)));
+		textSize = getTextSize(b->getName(), font, scale, thickness, baseline);
+		putText(screen, b->getName(),Point(b->getX()+0.5*b->getSize().width-0.5*textSize.width, b->getY() + 0.6*b->getSize().height),font, scale, Scalar(0, 0, 0), thickness);
 	}
 
 	if (images.size() != 0)
@@ -105,15 +122,69 @@ void Frame::frameToMat()
 	//images[currentImage].second[0](Rect(x, y2, windowSize.width, windowSize.height)).copyTo(screen(Rect(0, 0, windowSize.width, windowSize.height)));
 }
 
-void Frame::updateAllbuttons()
+bool Frame::updateAllbuttons(int _x,int _y,int eventType)
 {
+	Mat buttonMat;
+	double scale = 0.4;
+	int font = cv::FONT_HERSHEY_SIMPLEX;
+	int thickness = 1.5;
+	int* baseline = 0;
+	Size textSize;
 	for (auto b : frameButtonList)
 	{
-		if (cvui::button(screen, b->x, b->y, b->width, b->height, b->name))
+		if (b->isInside(_x,_y))
 		{
-			b->doFunction(*this);
+			if ((currentButton) && (b != currentButton))
+			{
+				buttonMat = Mat(100, 100, CV_8UC3, Scalar(120, 120, 120));
+				copyMakeBorder(buttonMat, buttonMat, 5, 5, 5, 5, BORDER_CONSTANT, Scalar(10, 10, 10));
+				resize(buttonMat, buttonMat, currentButton->getSize());
+				buttonMat.copyTo(screen(Rect(currentButton->getX(), currentButton->getY(), buttonMat.cols, buttonMat.rows)));
+				textSize = getTextSize(currentButton->getName(), font, scale, thickness, baseline);
+				putText(screen, currentButton->getName(), Point(currentButton->getX() + 0.5*currentButton->getSize().width - 0.5*textSize.width, currentButton->getY() + 0.6*currentButton->getSize().height), font, scale, Scalar(0, 0, 0), thickness);
+
+				currentButton = nullptr;
+			}
+			if (eventType == EVENT_LBUTTONDOWN)
+			{
+				buttonMat = Mat(100, 100, CV_8UC3, Scalar(60, 60, 60));
+				copyMakeBorder(buttonMat, buttonMat, 5, 5, 5, 5, BORDER_CONSTANT, Scalar(10, 10, 10));
+				resize(buttonMat, buttonMat, b->getSize());
+				buttonMat.copyTo(screen(Rect(b->getX(), b->getY(), buttonMat.cols, buttonMat.rows)));
+				textSize = getTextSize(b->getName(), font, scale, thickness, baseline);
+				putText(screen, b->getName(), Point(b->getX() + 0.5*b->getSize().width - 0.5*textSize.width, b->getY() + 0.6*b->getSize().height), font, scale, Scalar(0, 0, 0), thickness);
+
+				currentButton = b;
+			}
+			else if (eventType == EVENT_LBUTTONUP)
+			{
+				b->doFunction(*this);
+			}
+			else if (eventType == EVENT_MOUSEMOVE)
+			{
+				buttonMat = Mat(100, 100, CV_8UC3, Scalar(180, 180, 180));
+				copyMakeBorder(buttonMat, buttonMat, 5, 5, 5, 5, BORDER_CONSTANT, Scalar(10, 10, 10));
+				resize(buttonMat, buttonMat, b->getSize());
+				buttonMat.copyTo(screen(Rect(b->getX(), b->getY(), buttonMat.cols, buttonMat.rows)));
+				textSize = getTextSize(b->getName(), font, scale, thickness, baseline);
+				putText(screen, b->getName(), Point(b->getX() + 0.5*b->getSize().width - 0.5*textSize.width, b->getY() + 0.6*b->getSize().height), font, scale, Scalar(0, 0, 0), thickness);
+
+				currentButton = b;
+			}
+			return true;
+		}
+		if ((currentButton))
+		{
+			buttonMat = Mat(100, 100, CV_8UC3, Scalar(120, 120, 120));
+			copyMakeBorder(buttonMat, buttonMat, 5, 5, 5, 5, BORDER_CONSTANT, Scalar(10, 10, 10));
+			resize(buttonMat, buttonMat, currentButton->getSize());
+			buttonMat.copyTo(screen(Rect(currentButton->getX(), currentButton->getY(), buttonMat.cols, buttonMat.rows)));
+			textSize = getTextSize(currentButton->getName(), font, scale, thickness, baseline);
+			putText(screen, currentButton->getName(), Point(currentButton->getX() + 0.5*currentButton->getSize().width - 0.5*textSize.width, currentButton->getY() + 0.6*currentButton->getSize().height), font, scale, Scalar(0, 0, 0), thickness);
+			currentButton = nullptr;
 		}
 	}
+	return false;
 }
 
 void Frame::addImage(String name, String path)
@@ -129,16 +200,15 @@ Mat Frame::getFrame()
 	return screen;
 }
 
-
-Mat Frame::getImage()
+void Frame::getImage(Mat& img)
 {
-	return image;
+	img = image;
 }
 
 void Frame::setImage(int i)
 {
 	currentImage = i;
-	image = images[currentImage].second[0].clone();
+	image = images[currentImage].second[images[currentImage].second.size() - 1].clone();
 	imageSize = Size(image.cols, image.rows);
 }
 
@@ -160,24 +230,46 @@ void Frame::addToBackgroundPos(int x, int y)
 
 void Frame::update(int cX,int cY)
 {
-	//imshow("t", background);
-	//waitKey(0);
 	background(Rect(backgroundX + cX, backgroundY + cY, windowSize.width - x - x2, windowSize.height - y - y2)).copyTo(screen(Rect(x, y, windowSize.width - x - x2, windowSize.height - y - y2)));
-
 }
 
 void Frame::updateBackground()
 {
 	background.setTo(Scalar(255, 255, 255));
 	image.copyTo(background(Rect(imageX + backgroundX, imageY + backgroundY, imageSize.width, imageSize.height)));
-
 }
 
 void Frame::resizeImagef(float f)
 {
 	imageSize.width *= f;
 	imageSize.height *= f;
-	resize(images[currentImage].second[0].clone(), image, imageSize);
+	resize(images[currentImage].second[images[currentImage].second.size()-1].clone(), image, imageSize);
+	updateBackground();
+}
+
+void Frame::updateImage()
+{
+	setImage(currentImage);
+}
+
+void Frame::modifyImage(Mat img)
+{
+	images[currentImage].second.push_back(img);
+	updateImage();
+}
+
+void Frame::centerImage()
+{
+	backgroundX = BX;
+	backgroundY = BY;
+}
+
+void Frame::undo()
+{
+	if (images[currentImage].second.size() < 2)
+		return;
+	images[currentImage].second.erase(images[currentImage].second.end() - 1);
+	updateImage();
 	updateBackground();
 }
 

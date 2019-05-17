@@ -9,9 +9,12 @@ using namespace cv;
 
 class Frame;
 
+
 class Button
 {
 private:
+	static Mat* const buttonMat;
+	static Mat* const pressedButtonMat;
 	bool automatic;
 	void(*pointerfunc)(Frame& frame);
 
@@ -34,5 +37,12 @@ public:
 	void setPosition(int _x, int _y, int _width, int _height);
 
 	bool isAutomatic();
+
+	bool isInside(int x, int y);
+
+	Size getSize();
+	int getX();
+	int getY();
+	String getName();
 };
 

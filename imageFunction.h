@@ -10,5 +10,6 @@ class Frame;
 
 void bright(Frame& frame);
 void dark(Frame& frame);
+void save(Frame& frame);
 
 

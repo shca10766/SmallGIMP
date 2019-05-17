@@ -1,8 +1,6 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
-#define CVUI_IMPLEMENTATION
-#include "cvui.h"
 
 #include <iostream>
 #include "Section.h"
@@ -32,8 +30,11 @@ int initialX = 0;
 int initialY = 0;
 int cX = 0;
 int cY = 0;
+
 void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 {
+	if (h.updateAllbuttons(x, y, event))
+		return;
 	switch (event)
 	{
 	case EVENT_LBUTTONDOWN:
@@ -72,6 +73,7 @@ void init(Frame& h)
 {
 	// Création du header
 	Section* header0 = new Section(cv::Mat(40, 1000, CV_8UC3, Scalar(80, 80, 80)), 0);
+	header0->addButton(new Button("save", &save));
 	h.addSection(header0);
 
 	// Création du footer
@@ -79,10 +81,10 @@ void init(Frame& h)
 	h.addSection(footer0);
 
 	// Création de la colonne de gauche
-	Section* left = new Section(cv::Mat(920, 50, CV_8UC3, Scalar(150, 150, 150)), 2);
-	//left->addButton(new Button("b", &bright));
-	//left->addButton(new Button("d", &dark));
-	h.addSection(left);
+	Section* left0 = new Section(cv::Mat(920, 50, CV_8UC3, Scalar(150, 150, 150)), 2);
+	left0->addButton(new Button("b", &bright));
+	left0->addButton(new Button("d", &dark));
+	h.addSection(left0);
 
 	// Création de la colonne de droite
 	Section* leftColumn0 = new Section(cv::Mat(920, 50, CV_8UC3, Scalar(130, 130, 130)), 3);
@@ -107,7 +109,6 @@ void init(Frame& h)
 	imshow(WINDOW_NAME, h.getFrame());
 	resizeWindow(WINDOW_NAME, WINDOW_WIDTH, WINDOW_HEIGHT);
 	setMouseCallback(WINDOW_NAME, CallBackFunc, NULL);
-	//cvui::init(WINDOW_NAME);
 }
 
 void GIMP()
@@ -118,83 +119,32 @@ void GIMP()
 	// Initialisation de l'interface
 	init(h);
 
+	int key;
 	// Boucle principale
 	while (true)
 	{
-		//h.updateAllbuttons();
-		//background(Rect(imageX + cX, imageY + cY, WINDOW_WIDTH - x - x2, WINDOW_HEIGHT - y - y2)).copyTo(finalImage(Rect(x, y, WINDOW_WIDTH - x - x2, WINDOW_HEIGHT - y - y2)));
 		h.update(cX, cY);
 
-		//cvui::update();
 		imshow(WINDOW_NAME, h.getFrame());
 
-		if (waitKey(20) == 27) {
-			break;
+		key = waitKey(10);
+		if (key != -1)
+		{
+			if (key == 27) {
+				break;
+			}
+			if (key == 32) {
+				h.centerImage();
+			}
+			if (key == 122) {
+				h.undo();
+			}
+			//cout << key << endl;
 		}
 	}
 }
 
-//bool down = false;
-//int baseX = 0;
-//int baseY = 0;
-//int cX = 0;
-//int cY = 0;
-//int baseImageX = 5000;
-//int baseImageY = 5000;
-//int imageX = baseImageX;
-//int imageY = baseImageY;
-//Mat img = imread("img/left.jpeg");
-//Mat imageTemp = img.clone();
-//Mat background = cv::Mat(10000, 10000, CV_8UC3, Scalar(255, 255, 255));
-//Mat finalImage = cv::Mat(WINDOW_HEIGHT, WINDOW_WIDTH, CV_8UC3, Scalar(0, 0, 0));
-//
-//int x = 20;
-//int y = 30;
-//int x2 = 35;
-//int y2 = 40;
-//
-//int ix = 50;
-//int iy = 50;
-//
-//
-//Size imgSize = Size(img.cols, img.rows);
-//
-//Size contentSize = Size(WINDOW_WIDTH - x - x2, WINDOW_HEIGHT - y - y2);
-
-
-//void test()
-//{
-//
-//	img.copyTo(background(Rect(ix+ imageX, iy+ imageY, imgSize.width, imgSize.height )));
-//	background(Rect(imageX+cX,imageY+cY, WINDOW_WIDTH - x - x2, WINDOW_HEIGHT - y - y2)).copyTo(finalImage(Rect(x, y, WINDOW_WIDTH - x - x2, WINDOW_HEIGHT - y - y2)));
-//	
-//	namedWindow(WINDOW_NAME);
-//	imshow(WINDOW_NAME, finalImage);
-//	resizeWindow(WINDOW_NAME, WINDOW_WIDTH, WINDOW_HEIGHT);
-//	setMouseCallback(WINDOW_NAME, CallBackFunc, NULL);
-//	//cvui::init(WINDOW_NAME);
-//	int key;
-//
-//	while (true)
-//	{
-//		
-//		background(Rect(imageX + cX, imageY + cY, WINDOW_WIDTH - x - x2, WINDOW_HEIGHT - y - y2)).copyTo(finalImage(Rect(x, y, WINDOW_WIDTH - x - x2, WINDOW_HEIGHT - y - y2)));
-//
-//		imshow(WINDOW_NAME, finalImage);
-//		key = waitKey(10);
-//		if (key == 27) {
-//			break;
-//		}
-//		if (key == 32) {
-//			imageX = baseImageX;
-//			imageY = baseImageY;
-//		}
-//
-//	}
-//}
-
 int main(int argc, const char *argv[])
 {
 	GIMP();
-	//test();
 }

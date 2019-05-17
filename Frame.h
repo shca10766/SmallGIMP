@@ -3,8 +3,6 @@
 #include <vector>
 #include <string>
 
-#include "cvui.h"
-
 #include "Section.h"
 
 #define BX 5000
@@ -28,6 +26,7 @@ private:
 	vector<Section*> contentFooter;
 	
 	vector<Button*> frameButtonList;
+	Button* currentButton = nullptr;
 
 	vector<pair<String,vector<Mat>>> images;
 	int currentImage = 0;
@@ -60,13 +59,13 @@ public:
 
 	void frameToMat();
 
-	void updateAllbuttons();
+	bool updateAllbuttons(int _x,int _y,int eventType);
 
 	void addImage(String name, String path);
 
 	Mat getFrame();
 
-	Mat getImage();
+	void getImage(Mat& img);
 
 	void setImage(int i);
 
@@ -76,9 +75,12 @@ public:
 	void update(int cX=0,int cY=0);
 	void updateBackground();
 	void resizeImagef(float f);
+	void updateImage();
 
+	void modifyImage(Mat img);
 
-
+	void centerImage();
+	void undo();
 
 };
 
