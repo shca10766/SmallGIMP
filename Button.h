@@ -2,7 +2,7 @@
 #include "opencv2/core.hpp"
 #include <string>
 #include "imageFunction.h"
-#include "frame.h"
+#include "Frame.h"
 
 using namespace std;
 using namespace cv;
