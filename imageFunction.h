@@ -1,3 +1,4 @@
+/*
 #pragma once
 #include <opencv2/opencv.hpp>
 #include "opencv2/imgcodecs.hpp" 
@@ -31,4 +32,17 @@ void detectAndDisplay(Mat& frame);
 void faceDetection(Mat& src);
 
 void dark(Mat & img);
+*/
+#pragma once
 
+#include <opencv2/opencv.hpp>
+#include "Frame.h"
+
+
+using namespace cv;
+
+class Frame;
+
+void bright(Frame& frame);
+void dark(Frame& frame);
+void save(Frame& frame);
