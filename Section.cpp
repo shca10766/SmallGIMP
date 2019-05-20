@@ -75,23 +75,25 @@ void Section::addButton(Button * b)
 	buttonList.push_back(b);
 }
 
-void Section::showAllButton(vector<Button*>& frameButtonList,int imageX,int imageY,Size size)
+void Section::showAllButton(vector<Button*>& frameButtonList,int imageX,int imageY,Size size,int s=0)
 {
-	int buttonWidth = min(size.width*0.8, size.height*0.8);
+	int buttonWidthX = min(size.width*0.8, size.height*0.8);
+	int buttonWidthY = buttonWidthX;
+	if (s == 2)
+		buttonWidthX *= 4;
 	bool horizontal = (size.width > size.height);
-	int x = imageX + 0.1*buttonWidth;
-	int y = imageY + 0.1*buttonWidth;
-
+	int x = imageX + 0.1*buttonWidthX;
+	int y = imageY + 0.1*buttonWidthY;
 	for (Button* b : buttonList)
 	{
 		if (b->isAutomatic())
 		{
-			b->setPosition(x, y, buttonWidth, buttonWidth);
+			b->setPosition(x, y, buttonWidthX, buttonWidthY);
 			frameButtonList.push_back(b);
 			if (horizontal)
-				x += buttonWidth * 1.1;
+				x += buttonWidthX * 1.1;
 			else
-				y += buttonWidth * 1.1;
+				y += buttonWidthY * 1.1;
 		}
 		else
 		{

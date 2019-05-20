@@ -82,5 +82,9 @@ public:
 	void centerImage();
 	void undo();
 
+	vector<pair<String, vector<Mat>>> getImages();
+
+	int numberOfImages();
+
 };
 

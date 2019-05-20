@@ -74,6 +74,7 @@ void init(Frame& h)
 	// Création du header
 	Section* header0 = new Section(cv::Mat(40, 1000, CV_8UC3, Scalar(80, 80, 80)), 0);
 	header0->addButton(new Button("save", &save));
+	header0->addButton(new Button("open", &openImage));
 	h.addSection(header0);
 
 	// Création du footer
@@ -93,13 +94,14 @@ void init(Frame& h)
 
 	// Création du header du content
 	Section* contentHeader0 = new Section(cv::Mat(20, 920, CV_8UC3, Scalar(180, 180, 180)), 4);
+
 	h.addSection(contentHeader0);
 
 	// Création du footer du content
 	Section* contentFooter0 = new Section(cv::Mat(20, 920, CV_8UC3, Scalar(220, 220, 220)), 5);
 	h.addSection(contentFooter0);
 
-	h.addImage("left", "img/left.jpeg");
+	h.addImage("image0", "img/left.jpeg");
 
 	// Création de la fenêtre
 	h.frameToMat();
@@ -121,9 +123,6 @@ void GIMP()
 
 	int key;
 	// Boucle principale
-	int alpha;
-	int alphaMax = 10;
-	createTrackbar("Feature:\n 0: Erosion \n 1: Dilation", WINDOW_NAME, &alpha, alphaMax);
 	while (true)
 	{
 		h.update(cX, cY);

@@ -39,7 +39,7 @@ public:
 
 	void addButton(Button * b);
 
-	void showAllButton(vector<Button*>& buttonList, int imageX, int imageY, Size size);
+	void showAllButton(vector<Button*>& buttonList, int imageX, int imageY, Size size,int s);
 
 };	
 

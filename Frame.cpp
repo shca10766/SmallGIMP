@@ -57,42 +57,42 @@ void Frame::frameToMat()
 	{
 		resize(s->imageBackground, s->imageBackground, Size(windowSize.width, s->imageBackground.rows));
 		s->imageBackground.copyTo(screen(Rect(0, y, s->imageBackground.cols, s->imageBackground.rows)));
-		s->showAllButton(frameButtonList, 0, y, s->imageBackground.size());
+		s->showAllButton(frameButtonList, 0, y, s->imageBackground.size(),0);
 		y += s->imageBackground.rows;
 	}
 	for (auto s : footer)
 	{
 		resize(s->imageBackground, s->imageBackground, Size(windowSize.width, s->imageBackground.rows));
 		s->imageBackground.copyTo(screen(Rect(0, windowSize.height - y2 - s->imageBackground.rows, s->imageBackground.cols, s->imageBackground.rows)));
-		s->showAllButton(frameButtonList, 0, windowSize.height - y2 - s->imageBackground.rows, s->imageBackground.size());
+		s->showAllButton(frameButtonList, 0, windowSize.height - y2 - s->imageBackground.rows, s->imageBackground.size(),0);
 		y2 += s->imageBackground.rows;
 	}
 	for(auto s : leftColumn)
 	{
 		resize(s->imageBackground, s->imageBackground, Size(s->imageBackground.cols, windowSize.height-y-y2));
 		s->imageBackground.copyTo(screen(Rect(x, y, s->imageBackground.cols, s->imageBackground.rows)));
-		s->showAllButton(frameButtonList, x, y, s->imageBackground.size());
+		s->showAllButton(frameButtonList, x, y, s->imageBackground.size(),0);
 		x += s->imageBackground.cols;
 	}
 	for(auto s : rightColumn)
 	{
 		resize(s->imageBackground, s->imageBackground, Size(s->imageBackground.cols, windowSize.height - y - y2));
 		s->imageBackground.copyTo(screen(Rect(windowSize.width - x2 - s->imageBackground.cols, y, s->imageBackground.cols, s->imageBackground.rows)));
-		s->showAllButton(frameButtonList, x, y, s->imageBackground.size());
+		s->showAllButton(frameButtonList, x, y, s->imageBackground.size(),0);
 		x2 += s->imageBackground.cols;
 	}
 	for(auto s : contentHeader)
 	{
 		resize(s->imageBackground, s->imageBackground, Size(windowSize.width-x-x2, s->imageBackground.rows));
 		s->imageBackground.copyTo(screen(Rect(x, y, s->imageBackground.cols, s->imageBackground.rows)));
-		s->showAllButton(frameButtonList, x, y, s->imageBackground.size());
+		s->showAllButton(frameButtonList, x, y, s->imageBackground.size(),2);
 		y += s->imageBackground.rows;
 	}
 	for (auto s : contentFooter)
 	{
 		resize(s->imageBackground, s->imageBackground, Size(windowSize.width - x - x2, s->imageBackground.rows));
 		s->imageBackground.copyTo(screen(Rect(x, windowSize.height - y2 - s->imageBackground.rows, s->imageBackground.cols, s->imageBackground.rows)));
-		s->showAllButton(frameButtonList, x, windowSize.height - y2 - s->imageBackground.rows, s->imageBackground.size());
+		s->showAllButton(frameButtonList, x, windowSize.height - y2 - s->imageBackground.rows, s->imageBackground.size(),0);
 		y2 += s->imageBackground.rows;
 	}
 
@@ -106,7 +106,6 @@ void Frame::frameToMat()
 	Size textSize;
 	for (auto b : frameButtonList)
 	{
-		cout << b->getSize().width << endl;
 		resize(buttonMat,buttonMat,b->getSize());
 		buttonMat.copyTo(screen(Rect(b->getX(), b->getY(), buttonMat.cols, buttonMat.rows)));
 		textSize = getTextSize(b->getName(), font, scale, thickness, baseline);
@@ -189,10 +188,13 @@ bool Frame::updateAllbuttons(int _x,int _y,int eventType)
 
 void Frame::addImage(String name, String path)
 {
+	contentHeader[0]->addButton(new Button(name, &switchImage,true));
 	vector<Mat> temp;
 	temp.push_back(imread(path));
-	images.push_back(make_pair("image0", temp));
+	images.push_back(make_pair(name, temp));
 	setImage(images.size() - 1);
+	updateBackground();
+	frameToMat();
 }
 
 Mat Frame::getFrame()
@@ -271,6 +273,16 @@ void Frame::undo()
 	images[currentImage].second.erase(images[currentImage].second.end() - 1);
 	updateImage();
 	updateBackground();
+}
+
+vector<pair<String, vector<Mat>>> Frame::getImages()
+{
+	return images;
+}
+
+int Frame::numberOfImages()
+{
+	return images.size();
 }
 
 

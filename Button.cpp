@@ -16,6 +16,7 @@ Button::Button(int _x, int _y, int _width, int _height, string _name, void(*_poi
 	y = _y;
 	width = _width;
 	height = _height;
+	imgSwitch = false;
 }
 
 Button::Button(string _name, void(*_pointerfunc)(Frame& frame))
@@ -23,8 +24,15 @@ Button::Button(string _name, void(*_pointerfunc)(Frame& frame))
 	automatic = true;
 	name = _name;
 	pointerfunc = _pointerfunc;
-	
+	imgSwitch = false;
+}
 
+Button::Button(string _name, void(*_pointerfunc)(Frame& frame),bool _imgSwitch)
+{
+	automatic = true;
+	name = _name;
+	pointerfunc = _pointerfunc;
+	imgSwitch = _imgSwitch;
 }
 
 
@@ -34,6 +42,18 @@ Button::~Button()
 
 void Button::doFunction(Frame & frame)
 {
+	if (imgSwitch)
+	{
+		auto f = frame.getImages();
+		for (unsigned i(0);i<frame.numberOfImages();i++)
+		{
+			if (f[i].first == name)
+			{
+				frame.setImage(i);
+				break;
+			}
+		}
+	}
 	(*pointerfunc)(frame);
 }
 

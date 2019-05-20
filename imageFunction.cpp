@@ -36,6 +36,37 @@ void save(Frame & frame)
 	frame.modifyImage(img);
 }
 
+void switchImage(Frame & frame)
+{
+	frame.updateBackground();
+}
+
+void openImage(Frame & frame)
+{
+	char const * lFilterPatterns[2] = { "*.jpeg", "*.jpg" };
+
+	char const * lTheOpenFileName = tinyfd_openFileDialog(
+		"let us read the password back",
+		"",
+		2,
+		lFilterPatterns,
+		NULL,
+		0);
+	if (!lTheOpenFileName)
+	{
+		tinyfd_messageBox(
+			"Error",
+			"Open file name is NULL",
+			"ok",
+			"error",
+			1);
+		return;
+	}
+	string name = "image" + to_string(frame.numberOfImages());
+	frame.addImage(name, lTheOpenFileName);
+
+}
+
 
 /*
 

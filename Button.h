@@ -26,10 +26,12 @@ public:
 	int width;
 	int height;
 	string name;
+	bool imgSwitch;
 
 	Button();
 	Button(int _x, int _y, int _width, int _height, string _name,void(*_pointerfunc)(Frame& frame));
 	Button(string name,void(*_pointerfunc)(Frame& frame));
+	Button(string name, void(*_pointerfunc)(Frame& frame),bool _imgSwitch);
 	~Button();
 
 	void doFunction(Frame& frame);
