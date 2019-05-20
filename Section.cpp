@@ -4,7 +4,7 @@
 
 Section::Section()
 {
-	imageBackground = Mat(Size(400,400), CV_8UC1, 0xFF);
+	imageBackground = Mat(Size(10,10), CV_8UC1, 0xFF);
 	type = 0;
 }
 
@@ -21,9 +21,15 @@ Section::Section(Mat _imageBackground, int _type, bool _containImages)
 	containImages = _containImages;
 }
 
+Section::Section(int _size, int _type, Scalar _color)
+{
+	imageBackground = Mat(Size(_size,_size),CV_8UC1,_color);
+	type = _type;
+	containImages = false;
+}
+
 Section::Section(Size size, Scalar color, int _type)
 {
-	// check if CV_8UC1 should be something else, https://docs.opencv.org/3.4/d3/d63/classcv_1_1Mat.html#a286371a6196eaaaf0b86e158590460b7
 	imageBackground = Mat(size, CV_8UC1, color); 
 	type = _type;
 }
@@ -93,5 +99,6 @@ void Section::showAllButton(vector<Button*>& frameButtonList,int imageX,int imag
 		}
 	}
 }
+
 
 
