@@ -121,6 +121,9 @@ void GIMP()
 
 	int key;
 	// Boucle principale
+	int alpha;
+	int alphaMax = 10;
+	createTrackbar("Feature:\n 0: Erosion \n 1: Dilation", WINDOW_NAME, &alpha, alphaMax);
 	while (true)
 	{
 		h.update(cX, cY);
