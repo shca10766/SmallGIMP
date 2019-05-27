@@ -1,0 +1,7 @@
+fonctions:
+	-
+
+choix des noms pour le open image.
+
+sauvegarder le fichier.
+
