@@ -20,7 +20,7 @@ Mat imgCopy;
 void brightnessCallBack(int value, void* userdata)
 {
 	Mat img2;
-	if ((int)userdata == 1)
+	if (*((int*)(&userdata)) == 1)
 		alpha = value;
 	else
 		beta = value;
@@ -62,7 +62,7 @@ void switchImage(Frame & frame)
 
 void openImage(Frame & frame)
 {
-	char const * lFilterPatterns[2] = { "*.jpeg", "*.jpg" };
+	/*char const * lFilterPatterns[2] = { "*.jpeg", "*.jpg" };
 
 	char const * lTheOpenFileName = tinyfd_openFileDialog(
 		"let us read the password back",
@@ -82,7 +82,7 @@ void openImage(Frame & frame)
 		return;
 	}
 	string name = "image" + to_string(frame.numberOfImages());
-	frame.addImage(name, lTheOpenFileName);
+	frame.addImage(name, lTheOpenFileName);*/
 
 }
 
