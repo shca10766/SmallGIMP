@@ -19,11 +19,32 @@ Button::Button(int _x, int _y, int _width, int _height, string _name, void(*_poi
 	imgSwitch = false;
 }
 
+Button::Button(int _x, int _y, int _width, int _height, string _name, Mat(*_pointerfunc2)(Frame &frame))
+{
+	automatic = false;
+	name = _name;
+	pointerfunc2 = _pointerfunc2;
+
+	x = _x;
+	y = _y;
+	width = _width;
+	height = _height;
+	imgSwitch = false;
+}
+
 Button::Button(string _name, void(*_pointerfunc)(Frame& frame))
 {
 	automatic = true;
 	name = _name;
 	pointerfunc = _pointerfunc;
+	imgSwitch = false;
+}
+
+Button::Button(string _name, Mat(*_pointerfunc2)(Frame& frame))
+{
+	automatic = true;
+	name = _name;
+	pointerfunc2 = _pointerfunc2;
 	imgSwitch = false;
 }
 
@@ -54,7 +75,8 @@ void Button::doFunction(Frame & frame)
 			}
 		}
 	}
-	(*pointerfunc)(frame);
+	frame.modifyImage((*pointerfunc2)(frame));
+	frame.updateBackground();
 }
 
 void Button::setPosition(int _x, int _y, int _width, int _height)

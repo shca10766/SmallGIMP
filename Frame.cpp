@@ -158,6 +158,7 @@ bool Frame::updateAllbuttons(int _x,int _y,int eventType)
 			else if (eventType == EVENT_LBUTTONUP)
 			{
 				b->doFunction(*this);
+
 			}
 			else if (eventType == EVENT_MOUSEMOVE)
 			{

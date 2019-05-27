@@ -28,7 +28,7 @@ void brightnessCallBack(int value, void* userdata)
 	imshow(WINDOW_NAME, img);
 }
 
-void brightness(Frame& frame)
+Mat brightness(Frame& frame)
 {
 	frame.updateImage();
 	img;
@@ -42,10 +42,9 @@ void brightness(Frame& frame)
 	
 	brightnessCallBack(0, 0);
 	
-	while (!waitKey(0)) {}
-	frame.modifyImage(img);
-	frame.updateBackground();
+	waitKey(0);
 	destroyWindow(WINDOW_NAME);
+	return img;
 }
 
 void save(Frame & frame)

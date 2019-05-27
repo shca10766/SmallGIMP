@@ -45,7 +45,7 @@ using namespace cv;
 
 class Frame;
 
-void brightness(Frame& frame);
+Mat brightness(Frame& frame);
 
 void save(Frame& frame);
 

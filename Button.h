@@ -17,6 +17,8 @@ private:
 	static Mat* const pressedButtonMat;
 	bool automatic;
 	void(*pointerfunc)(Frame& frame);
+	Mat(*pointerfunc2)(Frame& frame);
+
 
 
 public:
@@ -30,7 +32,10 @@ public:
 
 	Button();
 	Button(int _x, int _y, int _width, int _height, string _name,void(*_pointerfunc)(Frame& frame));
+	Button(int _x, int _y, int _width, int _height, string _name, Mat(*_pointerfunc2)(Frame& frame));
+
 	Button(string name,void(*_pointerfunc)(Frame& frame));
+	Button(string _name, Mat(*_pointerfunc2)(Frame &frame));
 	Button(string name, void(*_pointerfunc)(Frame& frame),bool _imgSwitch);
 	~Button();
 

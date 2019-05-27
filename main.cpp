@@ -106,7 +106,7 @@ void init(Frame& h)
 	h.frameToMat();
 
 	// Création de la fenêtre
-	namedWindow(WINDOW_NAME);
+	namedWindow(WINDOW_NAME, WINDOW_GUI_NORMAL);
 	imshow(WINDOW_NAME, h.getFrame());
 	resizeWindow(WINDOW_NAME, WINDOW_WIDTH, WINDOW_HEIGHT);
 	setMouseCallback(WINDOW_NAME, CallBackFunc, NULL);
