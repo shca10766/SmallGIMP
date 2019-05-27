@@ -14,8 +14,23 @@
 
 int alpha = 100;
 int beta = 0;
+int height;
+int width;
 Mat img;
 Mat imgCopy;
+int elem = 0;
+int sizeF = 0;
+int feature = 0;
+int const max_feature = 1;
+int const max_elem = 2;
+int const max_kernel_size = 21;
+Stitcher::Mode mode = Stitcher::PANORAMA;
+vector<Mat> imgs;
+String face_cascade_name = "haarcascade_frontalface_alt2.xml";
+String eyes_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
+CascadeClassifier face_cascade;
+CascadeClassifier eyes_cascade;
+RNG rng(12345);
 
 void brightnessCallBack(int value, void* userdata)
 {
@@ -85,7 +100,121 @@ void openImage(Frame & frame)
 	frame.addImage(name, lTheOpenFileName);
 
 }
+void DilaCallBack(int value, void* userdata)
+{
+	int type;
+	if (elem == 0) { type = MORPH_RECT; }
+	else if (elem == 1) { type = MORPH_CROSS; }
+	else if (elem == 2) { type = MORPH_ELLIPSE; }
 
+	Mat element = getStructuringElement(type, Size(2 * sizeF + 1, 2 * sizeF + 1), Point(sizeF, sizeF));
+	if (feature == 0) {
+		erode(imgCopy, img, element);
+	}
+	else if (feature == 1) {
+		dilate(imgCopy, img, element);
+	}
+	Mat img2;
+	
+	imshow(WINDOW_NAME, img);
+}
+void dila_Ero(Frame & frame)
+{
+	/// Create windows
+	frame.updateImage();
+	img;
+	frame.getImage(img);
+	imgCopy = img.clone();
+	namedWindow(WINDOW_NAME);
+	//namedWindow("Demo");
+	createTrackbar("Feature:\n 0: Erosion \n 1: Dilation", "Demo", &feature, max_feature, DilaCallBack);
+	createTrackbar("Element:\n 0: Rect \n 1: Cross \n 2: Ellipse", "Demo", &elem, max_elem, DilaCallBack);
+	createTrackbar("Kernel size:\n 2n +1", "Demo", &sizeF, max_kernel_size, DilaCallBack);
+	DilaCallBack(0, 0);
+	while (!waitKey(0)){}
+	frame.modifyImage(img);
+	frame.updateBackground();
+	destroyWindow(WINDOW_NAME);
+}
+void ResizeCallBack(int value, void* userdata){
+	Mat img2;
+	if ((int)userdata == 1)
+		height = value;
+	else
+		width = value;
+	resize(img, imgCopy, Size(height, width));
+	imshow(WINDOW_NAME, img);
+}
+void ResizeFunction(Frame & frame) {
+
+	frame.updateImage();
+	img;
+	frame.getImage(img);
+	imgCopy = img.clone();
+	int alpha_max = img.size().height;
+	int beta_max = img.size().width;
+	namedWindow(WINDOW_NAME);
+	createTrackbar("height", WINDOW_NAME, &height, alpha_max, ResizeCallBack, (void*)1);
+	createTrackbar("width", WINDOW_NAME, &width, beta_max, ResizeCallBack, (void*)2);
+	ResizeCallBack(0,0);
+	
+	while (!waitKey(0))
+	{}
+	frame.modifyImage(img);
+	frame.updateBackground();
+	destroyWindow(WINDOW_NAME);
+}
+
+void detectAndDisplay(Frame & frame)
+{
+	std::vector<Rect> faces;
+	frame.updateImage();
+	img;
+	frame.getImage(img);
+	imgCopy = img.clone();
+	namedWindow(WINDOW_NAME);
+	Mat frame_gray;
+
+	cvtColor(imgCopy, frame_gray, cv::COLOR_BGR2GRAY);
+	equalizeHist(frame_gray, frame_gray);
+
+	//-- Detect faces
+	face_cascade.detectMultiScale(frame_gray, faces, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(30, 30));
+
+
+	for (size_t i = 0; i < faces.size(); i++)
+
+	{
+		Point center(faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5);
+		ellipse(imgCopy, center, Size(faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar(255, 0, 255), 4, 8, 0);
+
+		Mat faceROI = frame_gray(faces[i]);
+		std::vector<Rect> eyes;
+
+		//-- In each face, detect eyes
+		eyes_cascade.detectMultiScale(faceROI, eyes, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(30, 30));
+
+		for (size_t j = 0; j < eyes.size(); j++)
+		{
+			Point center(faces[i].x + eyes[j].x + eyes[j].width*0.5, faces[i].y + eyes[j].y + eyes[j].height*0.5);
+			int radius = cvRound((eyes[j].width + eyes[j].height)*0.25);
+			circle(imgCopy, center, radius, Scalar(255, 0, 0), 4, 8, 0);
+		}
+	}
+	imshow(WINDOW_NAME, imgCopy);
+	while (!waitKey(0)) {}
+	frame.modifyImage(img);
+	frame.updateBackground();
+	destroyWindow(WINDOW_NAME);
+}
+
+
+void faceDetection(Frame & frame)
+{
+	if (!face_cascade.load(face_cascade_name)) { printf("--(!)Error loading\n"); return; };
+	if (!eyes_cascade.load(eyes_cascade_name)) { printf("--(!)Error loading\n"); return; };
+	detectAndDisplay(frame);
+}
 
 /*
 
