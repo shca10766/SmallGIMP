@@ -71,41 +71,42 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 
 void init(Frame& h)
 {
-	// Création du header
+	// CrÃ©ation du header
 	Section* header0 = new Section(cv::Mat(40, 1000, CV_8UC3, Scalar(80, 80, 80)), 0);
 	header0->addButton(new Button("save", &save));
 	header0->addButton(new Button("open", &openImage));
 	h.addSection(header0);
 
-	// Création du footer
+	// CrÃ©ation du footer
 	Section* footer0 = new Section(cv::Mat(40, 1000, CV_8UC3, Scalar(100, 100, 100)), 1);
 	h.addSection(footer0);
 
-	// Création de la colonne de gauche
+	// CrÃ©ation de la colonne de gauche
 	Section* left0 = new Section(cv::Mat(920, 50, CV_8UC3, Scalar(150, 150, 150)), 2);
 	left0->addButton(new Button("brightness", &brightness));
+	left0->addButton(new Button("cannyEdge", &cannyEdgeDetection));
 	h.addSection(left0);
 
-	// Création de la colonne de droite
+	// CrÃ©ation de la colonne de droite
 	Section* leftColumn0 = new Section(cv::Mat(920, 50, CV_8UC3, Scalar(130, 130, 130)), 3);
 	h.addSection(leftColumn0);
 
 
-	// Création du header du content
+	// CrÃ©ation du header du content
 	Section* contentHeader0 = new Section(cv::Mat(20, 920, CV_8UC3, Scalar(180, 180, 180)), 4);
 
 	h.addSection(contentHeader0);
 
-	// Création du footer du content
+	// CrÃ©ation du footer du content
 	Section* contentFooter0 = new Section(cv::Mat(20, 920, CV_8UC3, Scalar(220, 220, 220)), 5);
 	h.addSection(contentFooter0);
 
 	h.addImage("image0", "img/left.jpeg");
 
-	// Création de la fenêtre
+	// CrÃ©ation de la fenÃªtre
 	h.frameToMat();
 
-	// Création de la fenêtre
+	// CrÃ©ation de la fenÃªtre
 	namedWindow(WINDOW_NAME);
 	imshow(WINDOW_NAME, h.getFrame());
 	resizeWindow(WINDOW_NAME, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -114,7 +115,7 @@ void init(Frame& h)
 
 void GIMP()
 {
-	// Création de la frame qui va contenir l'ensemble de la fenêtre
+	// CrÃ©ation de la frame qui va contenir l'ensemble de la fenÃªtre
 	h = Frame(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	// Initialisation de l'interface
