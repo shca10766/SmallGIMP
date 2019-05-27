@@ -3,4 +3,4 @@ clean:
 	rm -f *.o main
 
 main: clean
-	g++ *.cpp *.c -o main `pkg-config --cflags --libs opencv`
+	g++ *.cpp *.c  -o main `pkg-config --cflags --libs opencv`
