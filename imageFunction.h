@@ -52,3 +52,5 @@ void save(Frame& frame);
 void switchImage(Frame& frame);
 
 void openImage(Frame& frame);
+
+void cannyEdgeDetection(Frame & frame);
