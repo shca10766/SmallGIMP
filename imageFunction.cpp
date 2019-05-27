@@ -1,5 +1,7 @@
 #include "imageFunction.h"
 
+#define WINDOW_NAME "ImageEditor"
+
 // to get the image displayed :
 //	Mat img;
 //	frame.getImage(img);
@@ -10,23 +12,40 @@
 // to "save" the modification of the image in the program, so that the next getImage will send the modified image:
 // frame.modifyImage(img);
 
+int alpha = 100;
+int beta = 0;
+Mat img;
+Mat imgCopy;
 
-void bright(Frame& frame)
+void brightnessCallBack(int value, void* userdata)
 {
-	frame.updateImage();
-	Mat img;
-	frame.getImage(img);
-	img.convertTo(img, img.type(), 1, 20);
-	frame.updateBackground();
+	Mat img2;
+	if ((int)userdata == 1)
+		alpha = value;
+	else
+		beta = value;
+	imgCopy.convertTo(img, img.type(), (double) alpha/100, beta);
+	imshow(WINDOW_NAME, img);
 }
 
-void dark(Frame& frame)
+void brightness(Frame& frame)
 {
 	frame.updateImage();
-	Mat img;
+	img;
 	frame.getImage(img);
-	img.convertTo(img, img.type(), 1, -20);
+	imgCopy = img.clone();
+	int alpha_max = 200;
+	int beta_max = 50;
+	namedWindow(WINDOW_NAME);
+	createTrackbar("alpha", WINDOW_NAME, &alpha, alpha_max, brightnessCallBack, (void*) 1);
+	createTrackbar("beta", WINDOW_NAME, &beta, beta_max, brightnessCallBack,(void*) 2);
+	
+	brightnessCallBack(0, 0);
+	
+	while (!waitKey(0)) {}
+	frame.modifyImage(img);
 	frame.updateBackground();
+	destroyWindow(WINDOW_NAME);
 }
 
 void save(Frame & frame)

@@ -45,8 +45,8 @@ using namespace cv;
 
 class Frame;
 
-void bright(Frame& frame);
-void dark(Frame& frame);
+void brightness(Frame& frame);
+
 void save(Frame& frame);
 
 void switchImage(Frame& frame);

@@ -83,8 +83,7 @@ void init(Frame& h)
 
 	// Création de la colonne de gauche
 	Section* left0 = new Section(cv::Mat(920, 50, CV_8UC3, Scalar(150, 150, 150)), 2);
-	left0->addButton(new Button("b", &bright));
-	left0->addButton(new Button("d", &dark));
+	left0->addButton(new Button("brightness", &brightness));
 	h.addSection(left0);
 
 	// Création de la colonne de droite
