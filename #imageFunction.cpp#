@@ -489,3 +489,51 @@ void faceDetection(Mat& src)
 }
 
 */
+//----------------------------------------------CANNY EDGE DETECTION-------------------------------------------------//
+
+/// Global variables
+
+Mat img_gray;
+Mat detected_edges;
+
+int edgeThresh = 1;
+int lowThreshold = 1;
+int const max_lowThreshold = 100;
+int r = 3;
+int kernel_size = 3;
+
+void cannyEdgeCallBack(int, void*)
+{
+
+	/// Reduce noise with a kernel 3x3
+	blur(img_gray, detected_edges, Size(3, 3));
+
+	/// Canny detector
+	Canny(detected_edges, detected_edges, lowThreshold, lowThreshold*r, kernel_size);
+
+	/// Using Canny's output as a mask, we display our result
+	imgCopy = Scalar::all(0);
+
+	img.copyTo(imgCopy, detected_edges);
+	imshow(WINDOW_NAME, imgCopy);
+}
+
+void cannyEdgeDetection(Frame& frame)
+{
+	frame.updateImage();
+	img;
+	frame.getImage(img);
+	/// Create a matrix of the same type and size as src (for dst)
+	imgCopy.create(img.size(), img.type());
+	/// Convert the image to grayscale
+	cvtColor(img, img_gray, COLOR_BGR2GRAY);
+	namedWindow(WINDOW_NAME);
+	createTrackbar("Min Threshold:", WINDOW_NAME, &lowThreshold, max_lowThreshold, cannyEdgeCallBack);
+
+	cannyEdgeCallBack(0, 0);
+
+	while (!waitKey(0)) {}
+	frame.modifyImage(imgCopy);
+	frame.updateBackground();
+	destroyWindow(WINDOW_NAME);
+}
