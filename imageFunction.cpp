@@ -159,6 +159,7 @@ void cannyEdgeCallBack(Frame &frame, double lowThreshold, int id)
 
 void cannyEdgeDetection(Frame& frame)
 {
+	close(frame);
 	frame.updateImage();
 	frame.getImage(img);
 	imgCopy = img.clone();
