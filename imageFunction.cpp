@@ -287,7 +287,35 @@ void cannyEdgeDetection(Frame& frame)
 	frame.frameToMat();
 }
 
+//----------------------------------------------RESIZING-------------------------------------------------//
+Size imgSize;
 
+void resizeCallBack(Frame &frame, double value, int id)
+{
+	if (id == 1)
+		imgSize.width = value;
+	else
+		imgSize.height = value;
+	resize(imgCopy, imgSent, imgSize);
+	frame.setTempImage(imgSent);
+}
+
+void resize(Frame& frame) 
+{
+	imgSize = frame.getSize();
+	frame.updateImage();
+	frame.getImage(img);
+	imgCopy = img.clone();
+	imgSent = imgCopy.clone();
+	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
+	rightColumn0->addTrackbar(new Trackbar("cols", 0, 2500, 50, 1000, imgSize.width, &resizeCallBack, 1));
+	rightColumn0->addTrackbar(new Trackbar("row", 0, 2500, 50, 1000, imgSize.height, &resizeCallBack, 2));
+	rightColumn0->addButton(new Button("save", &saveImage));
+	rightColumn0->addButton(new Button("cancel", &close));
+
+	frame.addSection(rightColumn0);
+	frame.frameToMat();
+}
 /*
 
 #include "imageFunction.h"
