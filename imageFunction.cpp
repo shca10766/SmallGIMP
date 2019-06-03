@@ -94,49 +94,51 @@ void openImage(Frame & frame)
 
 /// Global variables
 
-Mat img_gray;
+Mat img_edge;
 Mat detected_edges;
 
 int edgeThresh = 1;
-int lowThreshold = 1;
 int const max_lowThreshold = 100;
 int r = 3;
 int kernel_size = 3;
 
-void cannyEdgeCallBack(int, void*)
+void cannyEdgeCallBack(Frame &frame, double lowThreshold, int id)
 {
 
+	if (lowThreshold == 0) {
+		frame.setTempImage(imgCopy);
+		return;
+	}
+
 	/// Reduce noise with a kernel 3x3
-	blur(img_gray, detected_edges, Size(3, 3));
+	blur(img_edge, detected_edges, Size(3, 3));
 
 	/// Canny detector
+	cout << "bonjour" << lowThreshold << endl;
 	Canny(detected_edges, detected_edges, lowThreshold, lowThreshold*r, kernel_size);
 
 	/// Using Canny's output as a mask, we display our result
-	imgCopy = Scalar::all(0);
+	imgSent = Scalar::all(0);
 
-	img.copyTo(imgCopy, detected_edges);
-	imshow(WINDOW_NAME, imgCopy);
+	imgCopy.copyTo(imgSent, detected_edges);
+	frame.setTempImage(imgSent);
 }
 
 void cannyEdgeDetection(Frame& frame)
 {
 	frame.updateImage();
-	img;
 	frame.getImage(img);
-	/// Create a matrix of the same type and size as src (for dst)
-	imgCopy.create(img.size(), img.type());
+	imgCopy = img.clone();
+	imgSent = imgCopy.clone();
 	/// Convert the image to grayscale
-	cvtColor(img, img_gray, COLOR_BGR2GRAY);
-	namedWindow(WINDOW_NAME);
-	createTrackbar("Min Threshold:", WINDOW_NAME, &lowThreshold, max_lowThreshold, cannyEdgeCallBack);
+	cvtColor(imgCopy, img_edge, COLOR_BGR2GRAY);
+	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
+	rightColumn0->addTrackbar(new Trackbar("t", 0, 100, 1, 10, 0, &cannyEdgeCallBack, 1));
+	rightColumn0->addButton(new Button("save", &saveImage));
+	rightColumn0->addButton(new Button("cancel", &close));
 
-	cannyEdgeCallBack(0, 0);
-
-	while (!waitKey(0)) {}
-	frame.modifyImage(imgCopy);
-	frame.updateBackground();
-	destroyWindow(WINDOW_NAME);
+	frame.addSection(rightColumn0);
+	frame.frameToMat();
 }
 
 
