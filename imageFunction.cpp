@@ -30,6 +30,7 @@ void brightnessCallback(Frame &frame,double value, int id)
 
 void brightness(Frame &frame)
 {
+	close(frame);
 	alpha = 1;
 	beta = 0;
 	frame.updateImage();
@@ -56,16 +57,48 @@ void close(Frame & frame)
 {
 	frame.updateImage();
 	frame.updateBackground();
-	frame.removeLastRightSection();
+	while (frame.rightSectionLength() > 0)
+		frame.removeLastRightSection();
+}
+
+void save(Frame & frame)
+{
+
+	Mat img;
+	frame.getImage(img);
+
+	char const * lFilterPatterns[2] = { "*.jpeg", "*.jpg" };
+	char const * lTheSaveFileName;
+
+	lTheSaveFileName = tinyfd_saveFileDialog(
+		"let us save this Image",
+		"test.jpg",
+		2,
+		lFilterPatterns,
+		NULL);
+	if (!lTheSaveFileName)
+	{
+		tinyfd_messageBox(
+			"Error",
+			"Save file name is NULL",
+			"ok",
+			"error",
+			1);
+		return;
+	}
+	imwrite(lTheSaveFileName, img);
+
 }
 
 void switchImage(Frame & frame)
 {
+	close(frame);
 	frame.updateBackground();
 }
 
 void openImage(Frame & frame)
 {
+	close(frame);
 	char const * lFilterPatterns[2] = { "*.jpeg", "*.jpg" };
 
 	char const * lTheOpenFileName = tinyfd_openFileDialog(

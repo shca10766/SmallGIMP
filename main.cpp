@@ -87,6 +87,7 @@ void init(Frame& h)
 {
 	// Création du header
 	Section* header0 = new Section(cv::Mat(40, 1000, CV_8UC3, Scalar(80, 80, 80)), 0);
+	header0->addButton(new Button("save", &save));
 	header0->addButton(new Button("open", &openImage));
 	h.addSection(header0);
 
@@ -433,7 +434,8 @@ void GIMP()
 //	imshow("test", test);
 //	waitKey(0);
 //}
-#include "tinyfiledialogs.h"
+
+
 int main(int argc, const char *argv[])
 {
 	GIMP();

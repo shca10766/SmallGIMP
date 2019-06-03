@@ -16,9 +16,11 @@ void save(Frame& frame);
 
 void saveImage(Frame& frame);
 
+void save(Frame & frame);
+
+
 void close(Frame& frame);
-void tempCallback(Frame& frame,double value, int id);
-void temp(Frame& frame);
+void brightnessCallback(Frame& frame,double value, int id);
 
 void switchImage(Frame& frame);
 

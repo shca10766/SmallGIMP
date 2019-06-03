@@ -98,5 +98,7 @@ public:
 
 	void removeLastRightSection();
 
+	int rightSectionLength();
+
 };
 

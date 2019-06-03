@@ -355,6 +355,11 @@ void Frame::removeLastRightSection()
 	return;
 }
 
+int Frame::rightSectionLength()
+{
+	return rightColumn.size();
+}
+
 
 
 
