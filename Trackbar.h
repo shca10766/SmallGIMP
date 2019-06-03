@@ -1,5 +1,5 @@
 #pragma once
-#include <String>
+#include <string>
 #include <opencv2/opencv.hpp>
 #include "Frame.h"
 
