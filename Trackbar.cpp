@@ -33,6 +33,13 @@ void Trackbar::render(Mat &mat, Rect area)
 
 void Trackbar::update()
 {
+	double scale = 0.4;
+	int font = cv::FONT_HERSHEY_SIMPLEX;
+	int thickness = 1.5;
+	int* baseline = 0;
+	Size textSize;
+	ostringstream str;
+
 	cv::rectangle(img, pos, Scalar(60, 60, 60), -1, LINE_AA);
 	cv::rectangle(img, pos, Scalar(130, 130, 130), 1, LINE_AA);
 	int x = pos.x;
@@ -46,6 +53,9 @@ void Trackbar::update()
 		cv::Point aPoint1(pos.x + d * gapWidth, pos.y);
 		cv::Point aPoint2(pos.x + d * gapWidth, pos.y - 8);
 		cv::line(img, aPoint1, aPoint2, Scalar(130, 130, 130));
+		str.str(string());
+		str << d;
+		putText(img,str.str(), Point(pos.x+d*gapWidth,pos.y-5), font, scale, Scalar(0, 0, 0), thickness);
 	}
 	int aIndicatorWidth = 3;
 	int aIndicatorHeight = 4;
@@ -55,8 +65,14 @@ void Trackbar::update()
 	cv::Point aPoint1(aPixelX - aIndicatorWidth, temp - aIndicatorHeight);
 	cv::Point aPoint2(aPixelX + aIndicatorWidth, temp + aBarHeight + aIndicatorHeight);
 	cv::Rect aRect(aPoint1, aPoint2);
+	str.str(string());
+	str << currentValue;
+	putText(img, str.str(), Point(aPixelX, pos.y +30), font, scale, Scalar(0, 0, 0), thickness);
+
 	cv::rectangle(img, aRect, Scalar(130, 130, 130), -1, LINE_AA);
 	cv::rectangle(img, aRect, Scalar(40, 40, 40), 1, LINE_AA);
+	putText(img, label, Point(pos.x,pos.y-20), font, scale, Scalar(0, 0, 0), thickness);
+
 	needRefresh = false;
 }
 
