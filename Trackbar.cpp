@@ -63,13 +63,14 @@ void Trackbar::update()
 void Trackbar::positionValue(int x, int y)
 {
 	double a = max(min(((maxValue - minValue) * (x - pos.x)/(pos.width))+minValue,maxValue),minValue);
-	for (double b = minValue; b < maxValue; b += step)
+	for (double b = minValue; b <= maxValue; b += step)
 	{
 		if ((a >= (b - step * 0.5)) && (a <= (b + step * 0.5)))
 		{
 			cout << "trackbar : " << b << endl;
 			changeValue(b);
 			needRefresh = true;
+			return;
 		}
 	}
 }

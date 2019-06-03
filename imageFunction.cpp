@@ -123,6 +123,118 @@ void openImage(Frame & frame)
 
 }
 
+int elem = 0;
+int type = MORPH_RECT;
+int sizeF = 0;
+int feature = 0;
+String face_cascade_name = "haarcascade_frontalface_alt2.xml";
+String eyes_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
+CascadeClassifier face_cascade;
+CascadeClassifier eyes_cascade;
+RNG rng(12345);
+
+void detectAndDisplay(Frame & frame)
+{
+	close(frame);
+	frame.updateImage();
+	frame.getImage(img);
+	imgCopy = img.clone();
+	imgSent = imgCopy.clone();
+	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
+	rightColumn0->addButton(new Button("save", &saveImage));
+	rightColumn0->addButton(new Button("cancel", &close));
+	std::vector<Rect> faces;
+	Mat frame_gray;
+
+	cvtColor(imgCopy, frame_gray, cv::COLOR_BGR2GRAY);
+	equalizeHist(frame_gray, frame_gray);
+
+	//-- Detect faces
+	face_cascade.detectMultiScale(frame_gray, faces, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(30, 30));
+
+
+	for (size_t i = 0; i < faces.size(); i++)
+
+	{
+		Point center(faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5);
+		ellipse(imgSent, center, Size(faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar(255, 0, 255), 4, 8, 0);
+
+		Mat faceROI = frame_gray(faces[i]);
+		std::vector<Rect> eyes;
+
+		//-- In each face, detect eyes
+		eyes_cascade.detectMultiScale(faceROI, eyes, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(30, 30));
+
+		for (size_t j = 0; j < eyes.size(); j++)
+		{
+			Point center(faces[i].x + eyes[j].x + eyes[j].width*0.5, faces[i].y + eyes[j].y + eyes[j].height*0.5);
+			int radius = cvRound((eyes[j].width + eyes[j].height)*0.25);
+			circle(imgSent, center, radius, Scalar(255, 0, 0), 4, 8, 0);
+		}
+	}
+	frame.setTempImage(imgSent);
+	frame.addSection(rightColumn0);
+	frame.frameToMat();
+}
+
+
+void faceDetection(Frame & src)
+{
+	if (!face_cascade.load(face_cascade_name)) { printf("--(!)Error loading\n"); return; };
+	if (!eyes_cascade.load(eyes_cascade_name)) { printf("--(!)Error loading\n"); return; };
+	detectAndDisplay(src);
+}
+
+void DilaCallBack(Frame &frame, double values, int id)
+
+{
+	int value = (double)values;
+	if (id == 1) {
+		feature = value;
+	}
+	else if (id == 2) {
+		if (value == 0) { type = MORPH_RECT; }
+		else if (value == 1) { type = MORPH_CROSS; }
+		else if (value == 2) { type = MORPH_ELLIPSE; }
+	}
+	else if (id == 3) {
+		sizeF = value;
+	}
+
+	Mat element = getStructuringElement(type, Size(2 * sizeF + 1, 2 * sizeF + 1), Point(sizeF, sizeF));
+
+	if (feature == 0) {
+		erode(imgCopy, imgSent, element);
+	}
+
+	else if (feature == 1) {
+		dilate(imgCopy, imgSent, element);
+	}
+	frame.setTempImage(imgSent);
+}
+
+void dila_Ero(Frame & frame)
+{
+	feature = 0;
+	sizeF = 0;
+	type = MORPH_RECT;
+	close(frame);
+	/// Create windows
+	frame.updateImage();
+	frame.getImage(img);
+	imgCopy = img.clone();
+	imgSent = imgCopy.clone();
+	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
+	//namedWindow("Demo");
+	rightColumn0->addTrackbar(new Trackbar("t", 0, 1, 1, 1, 0, &DilaCallBack, 1));
+	rightColumn0->addTrackbar(new Trackbar("Rect/Cross/Ellipse", 0, 2, 1, 1, 0, &DilaCallBack, 2));
+	rightColumn0->addTrackbar(new Trackbar("KernelSize", 0, 21, 1, 1, 0, &DilaCallBack, 3));
+	rightColumn0->addButton(new Button("save", &saveImage));
+	rightColumn0->addButton(new Button("cancel", &close));
+	frame.addSection(rightColumn0);
+	frame.frameToMat();
+}
+
 //----------------------------------------------CANNY EDGE DETECTION-------------------------------------------------//
 
 /// Global variables

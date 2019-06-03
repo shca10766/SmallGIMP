@@ -27,3 +27,9 @@ void switchImage(Frame& frame);
 void openImage(Frame& frame);
 
 void cannyEdgeDetection(Frame & frame);
+
+void detectAndDisplay(Frame & frame);
+void faceDetection(Frame & src);
+
+void dila_Ero(Frame& frame);
+void DilaCallBack(Frame &frame, double value, int id);
