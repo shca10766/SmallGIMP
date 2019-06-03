@@ -37,8 +37,8 @@ void brightness(Frame &frame)
 	imgCopy = img.clone();
 	imgSent = imgCopy.clone();
 	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
-	rightColumn0->addTrackbar(new Trackbar("t", 0, 2, 0.1, 2, 1,&brightnessCallback,1));
-	rightColumn0->addTrackbar(new Trackbar("t", -100, 100, 5, 50, 0,&brightnessCallback,2));
+	rightColumn0->addTrackbar(new Trackbar("alpha", 0, 2, 0.1, 2, 1,&brightnessCallback,1));
+	rightColumn0->addTrackbar(new Trackbar("beta", -100, 100, 5, 50, 0,&brightnessCallback,2));
 	rightColumn0->addButton(new Button("save", &saveImage));
 	rightColumn0->addButton(new Button("cancel", &close));
 

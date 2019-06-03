@@ -433,7 +433,7 @@ void GIMP()
 //	imshow("test", test);
 //	waitKey(0);
 //}
-
+#include "tinyfiledialogs.h"
 int main(int argc, const char *argv[])
 {
 	GIMP();
