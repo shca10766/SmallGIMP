@@ -1,10 +1,4 @@
 TODO:
-rajouter toutes les fonctions.
-faire les couleurs?
-texte pour les trackbar.
-refaire taille pour bouton?
-vérifier les fuites de mémoires
-noms des fichiers?
 commenter
 
 
@@ -12,6 +6,5 @@ BUG:
 si on zoome trop, l'image ne s'étend plus.
 si on décale trop l'image, l'appli crash.
 on peut sélectionner l'image en dehors de la zone de l'image?
-aucune gestion des boutons qui sortent de l'écran
 
 
