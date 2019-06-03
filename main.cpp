@@ -96,7 +96,7 @@ void init(Frame& h)
 	//h.addSection(footer0);
 
 	// Création de la colonne de gauche
-	Section* left0 = new Section(cv::Mat(920, 50, CV_8UC3, Scalar(150, 150, 150)), 2);
+	Section* left0 = new Section(cv::Mat(920, 150, CV_8UC3, Scalar(150, 150, 150)), 2);
 	left0->addButton(new Button("brightness", &brightness));
 	left0->addButton(new Button("cannyEdge", &cannyEdgeDetection));
 	left0->addButton(new Button("Dila/Ero", &dila_Ero));

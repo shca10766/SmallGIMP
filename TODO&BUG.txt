@@ -1,12 +1,11 @@
 TODO:
-Pour les vidéos
 rajouter toutes les fonctions.
 faire les couleurs?
 texte pour les trackbar.
-refaire texte pour bouton?
-sauvegarder des images.
+refaire taille pour bouton?
 vérifier les fuites de mémoires
 noms des fichiers?
+commenter
 
 
 BUG:

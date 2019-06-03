@@ -81,9 +81,13 @@ void Section::showAllButton(vector<Button*>& frameButtonList,int imageX,int imag
 	int buttonWidthY = buttonWidthX;
 	int d = 1;
 	bool horizontal = (size.width > size.height);
-	if (s == 2)
+	if (s == 1)
+	{
+		buttonWidthY /= 4;
+	}
+	else if (s == 2)
 		buttonWidthX *= 4;
-	if (s == 3)
+	else if (s == 3)
 	{
 		buttonWidthX = 70;
 		buttonWidthY = 30;

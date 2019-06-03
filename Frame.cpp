@@ -72,7 +72,7 @@ void Frame::frameToMat()
 	{
 		resize(s->imageBackground, s->imageBackground, Size(s->imageBackground.cols, windowSize.height-y-y2));
 		s->imageBackground.copyTo(screen(Rect(x, y, s->imageBackground.cols, s->imageBackground.rows)));
-		s->showAllButton(frameButtonList, x, y, s->imageBackground.size(),0);
+		s->showAllButton(frameButtonList, x, y, s->imageBackground.size(),1);
 		x += s->imageBackground.cols;
 	}
 	for(auto s : rightColumn)
