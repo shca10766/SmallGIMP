@@ -99,6 +99,7 @@ public:
 	void removeLastRightSection();
 
 	int rightSectionLength();
-
+	
+	Size getSize();
 };
 
