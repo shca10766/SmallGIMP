@@ -28,6 +28,8 @@ void openImage(Frame& frame);
 
 void cannyEdgeDetection(Frame & frame);
 
+void resize(Frame & frame);
+
 void detectAndDisplay(Frame & frame);
 void faceDetection(Frame & src);
 
