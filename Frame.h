@@ -101,5 +101,7 @@ public:
 	int rightSectionLength();
 	
 	Size getSize();
+
+	Rect getImageArea();
 };
 

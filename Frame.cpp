@@ -366,3 +366,8 @@ Size Frame::getSize()
 	updateImage();
 	return imageSize;
 }
+
+Rect Frame::getImageArea() 
+{
+	return imageArea;
+}

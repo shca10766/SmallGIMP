@@ -35,3 +35,10 @@ void faceDetection(Frame & src);
 
 void dila_Ero(Frame& frame);
 void DilaCallBack(Frame &frame, double value, int id);
+
+bool compareY(cv::Point a, cv::Point b);
+bool compareX(cv::Point a, cv::Point b);
+bool checkInteriorExterior(const cv::Mat &mask, const cv::Rect &croppingMask, int &top, int &bottom, int &left, int &right);
+
+void Stitch(Frame & frame);
+void crop(cv::Mat &source);

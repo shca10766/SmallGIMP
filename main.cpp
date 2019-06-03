@@ -44,9 +44,13 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 		trackBarChanged = true;
 		return;
 	}
+	Rect imageArea;
 	switch (event)
 	{
 	case EVENT_LBUTTONDOWN:
+		imageArea = h.getImageArea();
+		if (!((imageArea.x < x) && (x < (imageArea.x + imageArea.width)) && (imageArea.y < y) && (y < (imageArea.y + imageArea.height))))
+			return;
 		cout << "1";
 		down = true;
 		initialX = x;
