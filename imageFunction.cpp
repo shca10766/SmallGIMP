@@ -38,8 +38,8 @@ void brightness(Frame &frame)
 	imgCopy = img.clone();
 	imgSent = imgCopy.clone();
 	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
-	rightColumn0->addTrackbar(new Trackbar("alpha", 0, 2, 0.1, 2, 1,&brightnessCallback,1));
-	rightColumn0->addTrackbar(new Trackbar("beta", -100, 100, 5, 50, 0,&brightnessCallback,2));
+	rightColumn0->addTrackbar(new Trackbar("Brightness : alpha", 0, 2, 0.1, 1, 1,&brightnessCallback,1));
+	rightColumn0->addTrackbar(new Trackbar("Brightness : beta", -100, 100, 5, 50, 0,&brightnessCallback,2));
 	rightColumn0->addButton(new Button("save", &saveImage));
 	rightColumn0->addButton(new Button("cancel", &close));
 
@@ -226,9 +226,9 @@ void dila_Ero(Frame & frame)
 	imgSent = imgCopy.clone();
 	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
 	//namedWindow("Demo");
-	rightColumn0->addTrackbar(new Trackbar("t", 0, 1, 1, 1, 0, &DilaCallBack, 1));
-	rightColumn0->addTrackbar(new Trackbar("Rect/Cross/Ellipse", 0, 2, 1, 1, 0, &DilaCallBack, 2));
-	rightColumn0->addTrackbar(new Trackbar("KernelSize", 0, 21, 1, 1, 0, &DilaCallBack, 3));
+	rightColumn0->addTrackbar(new Trackbar("0:dilation   1:Erosion", 0, 1, 1, 1, 0, &DilaCallBack, 1));
+	rightColumn0->addTrackbar(new Trackbar("0:Rect   1:Cross   2:Ellipse", 0, 2, 1, 1, 0, &DilaCallBack, 2));
+	rightColumn0->addTrackbar(new Trackbar("KernelSize", 0, 20, 1, 5, 0, &DilaCallBack, 3));
 	rightColumn0->addButton(new Button("save", &saveImage));
 	rightColumn0->addButton(new Button("cancel", &close));
 	frame.addSection(rightColumn0);
@@ -279,7 +279,7 @@ void cannyEdgeDetection(Frame& frame)
 	/// Convert the image to grayscale
 	cvtColor(imgCopy, img_edge, COLOR_BGR2GRAY);
 	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
-	rightColumn0->addTrackbar(new Trackbar("t", 0, 100, 1, 10, 0, &cannyEdgeCallBack, 1));
+	rightColumn0->addTrackbar(new Trackbar("Canny Edge Threshold", 0, 100, 1, 25, 0, &cannyEdgeCallBack, 1));
 	rightColumn0->addButton(new Button("save", &saveImage));
 	rightColumn0->addButton(new Button("cancel", &close));
 
@@ -302,14 +302,15 @@ void resizeCallBack(Frame &frame, double value, int id)
 
 void resize(Frame& frame) 
 {
+	close(frame);
 	imgSize = frame.getSize();
 	frame.updateImage();
 	frame.getImage(img);
 	imgCopy = img.clone();
 	imgSent = imgCopy.clone();
 	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
-	rightColumn0->addTrackbar(new Trackbar("cols", 0, 2500, 50, 1000, imgSize.width, &resizeCallBack, 1));
-	rightColumn0->addTrackbar(new Trackbar("row", 0, 2500, 50, 1000, imgSize.height, &resizeCallBack, 2));
+	rightColumn0->addTrackbar(new Trackbar("cols", 100, 2500, 50, 500, imgSize.width, &resizeCallBack, 1));
+	rightColumn0->addTrackbar(new Trackbar("row", 100, 2500, 50, 500, imgSize.height, &resizeCallBack, 2));
 	rightColumn0->addButton(new Button("save", &saveImage));
 	rightColumn0->addButton(new Button("cancel", &close));
 

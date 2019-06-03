@@ -54,7 +54,7 @@ void Trackbar::update()
 		cv::Point aPoint2(pos.x + d * gapWidth, pos.y - 8);
 		cv::line(img, aPoint1, aPoint2, Scalar(130, 130, 130));
 		str.str(string());
-		str << d;
+		str << (d+minValue);
 		putText(img,str.str(), Point(pos.x+d*gapWidth,pos.y-5), font, scale, Scalar(0, 0, 0), thickness);
 	}
 	int aIndicatorWidth = 3;

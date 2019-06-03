@@ -101,6 +101,8 @@ void init(Frame& h)
 	left0->addButton(new Button("cannyEdge", &cannyEdgeDetection));
 	left0->addButton(new Button("Dila/Ero", &dila_Ero));
 	left0->addButton(new Button("Face Recognition", &faceDetection));
+	left0->addButton(new Button("Resize", &resize));
+	left0->addButton(new Button("sticthing", &Stitch));
 	h.addSection(left0);
 
 	// Création de la colonne de droite
