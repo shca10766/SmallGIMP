@@ -251,6 +251,7 @@ void Frame::setImage(int i)
 void Frame::setTempImage(Mat & img)
 {
 	image = img;
+	imageSize = Size(image.cols, image.rows);
 }
 
 int Frame::getBackgroundX()
@@ -360,7 +361,8 @@ int Frame::rightSectionLength()
 	return rightColumn.size();
 }
 
-
-
-
-
+Size Frame::getSize()
+{
+	updateImage();
+	return imageSize;
+}
