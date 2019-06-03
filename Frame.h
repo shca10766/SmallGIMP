@@ -13,6 +13,7 @@ using namespace cv;
 
 class Section;
 class Button;
+class Trackbar;
 
 class Frame
 {
@@ -26,10 +27,13 @@ private:
 	vector<Section*> contentFooter;
 	
 	vector<Button*> frameButtonList;
+	vector<Trackbar*> frameTrackbarList;
 	Button* currentButton = nullptr;
+	Trackbar* currentTrackbar = nullptr;
 
 	vector<pair<String,vector<Mat>>> images;
 	int currentImage = 0;
+	Rect imageArea;
 
 	Mat background = cv::Mat(10000, 10000, CV_8UC3, Scalar(255, 255, 255));
 	Mat image;
@@ -61,6 +65,8 @@ public:
 
 	bool updateAllbuttons(int _x,int _y,int eventType);
 
+	bool updateAllTrackbar(int _x, int _y, int eventType);
+
 	void addImage(String name, String path);
 
 	Mat getFrame();
@@ -68,6 +74,8 @@ public:
 	void getImage(Mat& img);
 
 	void setImage(int i);
+
+	void setTempImage(Mat& img);
 
 	int getBackgroundX();
 	int getBackgroundY();
@@ -78,6 +86,8 @@ public:
 	void updateImage();
 
 	void modifyImage(Mat img);
+	void doPressedButton();
+	void updateTrackbar();
 
 	void centerImage();
 	void undo();
@@ -85,6 +95,8 @@ public:
 	vector<pair<String, vector<Mat>>> getImages();
 
 	int numberOfImages();
+
+	void removeLastRightSection();
 
 };
 

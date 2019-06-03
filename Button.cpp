@@ -17,6 +17,7 @@ Button::Button(int _x, int _y, int _width, int _height, string _name, void(*_poi
 	width = _width;
 	height = _height;
 	imgSwitch = false;
+	isPressed = false;
 }
 
 Button::Button(string _name, void(*_pointerfunc)(Frame& frame))
@@ -25,6 +26,8 @@ Button::Button(string _name, void(*_pointerfunc)(Frame& frame))
 	name = _name;
 	pointerfunc = _pointerfunc;
 	imgSwitch = false;
+	isPressed = false;
+
 }
 
 Button::Button(string _name, void(*_pointerfunc)(Frame& frame),bool _imgSwitch)
@@ -33,6 +36,7 @@ Button::Button(string _name, void(*_pointerfunc)(Frame& frame),bool _imgSwitch)
 	name = _name;
 	pointerfunc = _pointerfunc;
 	imgSwitch = _imgSwitch;
+	isPressed = false;
 }
 
 
@@ -54,6 +58,7 @@ void Button::doFunction(Frame & frame)
 			}
 		}
 	}
+	isPressed = false;
 	(*pointerfunc)(frame);
 }
 
@@ -73,6 +78,11 @@ bool Button::isAutomatic()
 bool Button::isInside(int _x, int _y)
 {
 	return ((_x > x) && (_x < x + width) && (_y > y) && (_y < y + height));
+}
+
+void Button::setState(bool _isPressed)
+{
+	isPressed = _isPressed;
 }
 
 Size Button::getSize()

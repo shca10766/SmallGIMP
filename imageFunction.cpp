@@ -12,47 +12,51 @@
 // to "save" the modification of the image in the program, so that the next getImage will send the modified image:
 // frame.modifyImage(img);
 
-int alpha = 100;
-int beta = 0;
 Mat img;
 Mat imgCopy;
+Mat imgSent;
 
-void brightnessCallBack(int value, void* userdata)
+double alpha = 1;
+double beta = 0;
+void brightnessCallback(Frame &frame,double value, int id)
 {
-	Mat img2;
-	if (*((int*)(&userdata)) == 1)
+	if (id == 1)
 		alpha = value;
 	else
 		beta = value;
-	imgCopy.convertTo(img, img.type(), (double) alpha/100, beta);
-	imshow(WINDOW_NAME, img);
+	imgCopy.convertTo(imgSent, img.type(),alpha, beta);
+	frame.setTempImage(imgSent);
 }
 
-void brightness(Frame& frame)
+void brightness(Frame &frame)
 {
+	alpha = 1;
+	beta = 0;
 	frame.updateImage();
-	img;
 	frame.getImage(img);
 	imgCopy = img.clone();
-	int alpha_max = 200;
-	int beta_max = 50;
-	namedWindow(WINDOW_NAME);
-	createTrackbar("alpha", WINDOW_NAME, &alpha, alpha_max, brightnessCallBack, (void*) 1);
-	createTrackbar("beta", WINDOW_NAME, &beta, beta_max, brightnessCallBack,(void*) 2);
-	
-	brightnessCallBack(0, 0);
-	
-	while (!waitKey(0)) {}
-	frame.modifyImage(img);
-	frame.updateBackground();
-	destroyWindow(WINDOW_NAME);
+	imgSent = imgCopy.clone();
+	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
+	rightColumn0->addTrackbar(new Trackbar("t", 0, 2, 0.1, 2, 1,&brightnessCallback,1));
+	rightColumn0->addTrackbar(new Trackbar("t", -100, 100, 5, 50, 0,&brightnessCallback,2));
+	rightColumn0->addButton(new Button("save", &saveImage));
+	rightColumn0->addButton(new Button("cancel", &close));
+
+	frame.addSection(rightColumn0);
+	frame.frameToMat();
 }
 
-void save(Frame & frame)
+void saveImage(Frame & frame)
 {
-	Mat img;
-	frame.getImage(img);
-	frame.modifyImage(img);
+	frame.modifyImage(imgSent);
+	close(frame);
+}
+
+void close(Frame & frame)
+{
+	frame.updateImage();
+	frame.updateBackground();
+	frame.removeLastRightSection();
 }
 
 void switchImage(Frame & frame)
@@ -84,6 +88,55 @@ void openImage(Frame & frame)
 	string name = "image" + to_string(frame.numberOfImages());
 	frame.addImage(name, lTheOpenFileName);
 
+}
+
+//----------------------------------------------CANNY EDGE DETECTION-------------------------------------------------//
+
+/// Global variables
+
+Mat img_gray;
+Mat detected_edges;
+
+int edgeThresh = 1;
+int lowThreshold = 1;
+int const max_lowThreshold = 100;
+int r = 3;
+int kernel_size = 3;
+
+void cannyEdgeCallBack(int, void*)
+{
+
+	/// Reduce noise with a kernel 3x3
+	blur(img_gray, detected_edges, Size(3, 3));
+
+	/// Canny detector
+	Canny(detected_edges, detected_edges, lowThreshold, lowThreshold*r, kernel_size);
+
+	/// Using Canny's output as a mask, we display our result
+	imgCopy = Scalar::all(0);
+
+	img.copyTo(imgCopy, detected_edges);
+	imshow(WINDOW_NAME, imgCopy);
+}
+
+void cannyEdgeDetection(Frame& frame)
+{
+	frame.updateImage();
+	img;
+	frame.getImage(img);
+	/// Create a matrix of the same type and size as src (for dst)
+	imgCopy.create(img.size(), img.type());
+	/// Convert the image to grayscale
+	cvtColor(img, img_gray, COLOR_BGR2GRAY);
+	namedWindow(WINDOW_NAME);
+	createTrackbar("Min Threshold:", WINDOW_NAME, &lowThreshold, max_lowThreshold, cannyEdgeCallBack);
+
+	cannyEdgeCallBack(0, 0);
+
+	while (!waitKey(0)) {}
+	frame.modifyImage(imgCopy);
+	frame.updateBackground();
+	destroyWindow(WINDOW_NAME);
 }
 
 
@@ -489,51 +542,3 @@ void faceDetection(Mat& src)
 }
 
 */
-//----------------------------------------------CANNY EDGE DETECTION-------------------------------------------------//
-
-/// Global variables
-
-Mat img_gray;
-Mat detected_edges;
-
-int edgeThresh = 1;
-int lowThreshold = 1;
-int const max_lowThreshold = 100;
-int r = 3;
-int kernel_size = 3;
-
-void cannyEdgeCallBack(int, void*)
-{
-
-	/// Reduce noise with a kernel 3x3
-	blur(img_gray, detected_edges, Size(3, 3));
-
-	/// Canny detector
-	Canny(detected_edges, detected_edges, lowThreshold, lowThreshold*r, kernel_size);
-
-	/// Using Canny's output as a mask, we display our result
-	imgCopy = Scalar::all(0);
-
-	img.copyTo(imgCopy, detected_edges);
-	imshow(WINDOW_NAME, imgCopy);
-}
-
-void cannyEdgeDetection(Frame& frame)
-{
-	frame.updateImage();
-	img;
-	frame.getImage(img);
-	/// Create a matrix of the same type and size as src (for dst)
-	imgCopy.create(img.size(), img.type());
-	/// Convert the image to grayscale
-	cvtColor(img, img_gray, COLOR_BGR2GRAY);
-	namedWindow(WINDOW_NAME);
-	createTrackbar("Min Threshold:", WINDOW_NAME, &lowThreshold, max_lowThreshold, cannyEdgeCallBack);
-
-	cannyEdgeCallBack(0, 0);
-
-	while (!waitKey(0)) {}
-	frame.modifyImage(imgCopy);
-	frame.updateBackground();
-	destroyWindow(WINDOW_NAME);
-}

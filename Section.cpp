@@ -79,11 +79,20 @@ void Section::showAllButton(vector<Button*>& frameButtonList,int imageX,int imag
 {
 	int buttonWidthX = min(size.width*0.8, size.height*0.8);
 	int buttonWidthY = buttonWidthX;
+	int d = 1;
+	bool horizontal = (size.width > size.height);
 	if (s == 2)
 		buttonWidthX *= 4;
-	bool horizontal = (size.width > size.height);
+	if (s == 3)
+	{
+		buttonWidthX = 70;
+		buttonWidthY = 30;
+		horizontal = true;
+		d = -1;
+		imageY += size.height*0.9;
+	}
 	int x = imageX + 0.1*buttonWidthX;
-	int y = imageY + 0.1*buttonWidthY;
+	int y = imageY + 0.1*buttonWidthY*d;
 	for (Button* b : buttonList)
 	{
 		if (b->isAutomatic())
@@ -99,6 +108,24 @@ void Section::showAllButton(vector<Button*>& frameButtonList,int imageX,int imag
 		{
 			frameButtonList.push_back(b);
 		}
+	}
+}
+
+void Section::addTrackbar(Trackbar * t)
+{
+	trackbarList.push_back(t);
+}
+
+void Section::renderAllTracbar(Mat & mat, vector<Trackbar*>& frameTrackbarList, Rect pos)
+{
+	Rect tpos = pos;
+	tpos = Rect(pos.x+20, pos.y+20, pos.width*0.8, 7);
+
+	for (Trackbar* t : trackbarList)
+	{
+		tpos = Rect(tpos.x,tpos.y+pos.height/5,tpos.width,tpos.height);
+		t->render(mat,tpos);
+		frameTrackbarList.push_back(t);
 	}
 }
 

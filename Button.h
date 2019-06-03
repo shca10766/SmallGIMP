@@ -27,6 +27,7 @@ public:
 	int height;
 	string name;
 	bool imgSwitch;
+	bool isPressed;
 
 	Button();
 	Button(int _x, int _y, int _width, int _height, string _name,void(*_pointerfunc)(Frame& frame));
@@ -41,6 +42,7 @@ public:
 	bool isAutomatic();
 
 	bool isInside(int x, int y);
+	void setState(bool _isPressed);
 
 	Size getSize();
 	int getX();

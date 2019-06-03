@@ -4,11 +4,13 @@
 #include <string>
 #include <vector>
 #include "Button.h"
+#include "Trackbar.h"
 
 using namespace cv;
 using namespace std;
 
 class Button;
+class Trackbar;
 
 class Section
 {
@@ -18,6 +20,7 @@ public:
 	Size size;
 	bool scalable;
 	vector<Button*> buttonList;
+	vector<Trackbar*> trackbarList;
 
 	bool containImages = false;
 	vector<Mat> imageList;
@@ -40,6 +43,10 @@ public:
 	void addButton(Button * b);
 
 	void showAllButton(vector<Button*>& buttonList, int imageX, int imageY, Size size,int s);
+
+	void addTrackbar(Trackbar * t);
+
+	void renderAllTracbar(Mat& mat, vector<Trackbar*>& frameTrackbarList,Rect pos);
 
 };	
 
