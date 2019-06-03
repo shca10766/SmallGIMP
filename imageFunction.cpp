@@ -12,167 +12,32 @@
 // to "save" the modification of the image in the program, so that the next getImage will send the modified image:
 // frame.modifyImage(img);
 
-int alpha = 100;
-int beta = 0;
-int height;
-int width;
 Mat img;
 Mat imgCopy;
+Mat imgSent;
+
+double alpha = 1;
+double beta = 0;
 int elem = 0;
+int type = MORPH_RECT;
 int sizeF = 0;
 int feature = 0;
-int const max_feature = 1;
-int const max_elem = 2;
-int const max_kernel_size = 21;
-Stitcher::Mode mode = Stitcher::PANORAMA;
-vector<Mat> imgs;
 String face_cascade_name = "haarcascade_frontalface_alt2.xml";
 String eyes_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
 CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 RNG rng(12345);
 
-void brightnessCallBack(int value, void* userdata)
-{
-	Mat img2;
-	if ((int)userdata == 1)
-		alpha = value;
-	else
-		beta = value;
-	imgCopy.convertTo(img, img.type(), (double) alpha/100, beta);
-	imshow(WINDOW_NAME, img);
-}
-
-void brightness(Frame& frame)
-{
-	frame.updateImage();
-	img;
-	frame.getImage(img);
-	imgCopy = img.clone();
-	int alpha_max = 200;
-	int beta_max = 50;
-	namedWindow(WINDOW_NAME);
-	createTrackbar("alpha", WINDOW_NAME, &alpha, alpha_max, brightnessCallBack, (void*) 1);
-	createTrackbar("beta", WINDOW_NAME, &beta, beta_max, brightnessCallBack,(void*) 2);
-	
-	brightnessCallBack(0, 0);
-	
-	while (!waitKey(0)) {}
-	frame.modifyImage(img);
-	frame.updateBackground();
-	destroyWindow(WINDOW_NAME);
-}
-
-void save(Frame & frame)
-{
-	Mat img;
-	frame.getImage(img);
-	frame.modifyImage(img);
-}
-
-void switchImage(Frame & frame)
-{
-	frame.updateBackground();
-}
-
-void openImage(Frame & frame)
-{
-	char const * lFilterPatterns[2] = { "*.jpeg", "*.jpg" };
-
-	char const * lTheOpenFileName = tinyfd_openFileDialog(
-		"let us read the password back",
-		"",
-		2,
-		lFilterPatterns,
-		NULL,
-		0);
-	if (!lTheOpenFileName)
-	{
-		tinyfd_messageBox(
-			"Error",
-			"Open file name is NULL",
-			"ok",
-			"error",
-			1);
-		return;
-	}
-	string name = "image" + to_string(frame.numberOfImages());
-	frame.addImage(name, lTheOpenFileName);
-
-}
-void DilaCallBack(int value, void* userdata)
-{
-	int type;
-	if (elem == 0) { type = MORPH_RECT; }
-	else if (elem == 1) { type = MORPH_CROSS; }
-	else if (elem == 2) { type = MORPH_ELLIPSE; }
-
-	Mat element = getStructuringElement(type, Size(2 * sizeF + 1, 2 * sizeF + 1), Point(sizeF, sizeF));
-	if (feature == 0) {
-		erode(imgCopy, img, element);
-	}
-	else if (feature == 1) {
-		dilate(imgCopy, img, element);
-	}
-	Mat img2;
-	
-	imshow(WINDOW_NAME, img);
-}
-void dila_Ero(Frame & frame)
-{
-	/// Create windows
-	frame.updateImage();
-	img;
-	frame.getImage(img);
-	imgCopy = img.clone();
-	namedWindow(WINDOW_NAME);
-	//namedWindow("Demo");
-	createTrackbar("Feature:\n 0: Erosion \n 1: Dilation", "Demo", &feature, max_feature, DilaCallBack);
-	createTrackbar("Element:\n 0: Rect \n 1: Cross \n 2: Ellipse", "Demo", &elem, max_elem, DilaCallBack);
-	createTrackbar("Kernel size:\n 2n +1", "Demo", &sizeF, max_kernel_size, DilaCallBack);
-	DilaCallBack(0, 0);
-	while (!waitKey(0)){}
-	frame.modifyImage(img);
-	frame.updateBackground();
-	destroyWindow(WINDOW_NAME);
-}
-void ResizeCallBack(int value, void* userdata){
-	Mat img2;
-	if ((int)userdata == 1)
-		height = value;
-	else
-		width = value;
-	resize(img, imgCopy, Size(height, width));
-	imshow(WINDOW_NAME, img);
-}
-void ResizeFunction(Frame & frame) {
-
-	frame.updateImage();
-	img;
-	frame.getImage(img);
-	imgCopy = img.clone();
-	int alpha_max = img.size().height;
-	int beta_max = img.size().width;
-	namedWindow(WINDOW_NAME);
-	createTrackbar("height", WINDOW_NAME, &height, alpha_max, ResizeCallBack, (void*)1);
-	createTrackbar("width", WINDOW_NAME, &width, beta_max, ResizeCallBack, (void*)2);
-	ResizeCallBack(0,0);
-	
-	while (!waitKey(0))
-	{}
-	frame.modifyImage(img);
-	frame.updateBackground();
-	destroyWindow(WINDOW_NAME);
-}
-
 void detectAndDisplay(Frame & frame)
 {
-	std::vector<Rect> faces;
 	frame.updateImage();
-	img;
 	frame.getImage(img);
 	imgCopy = img.clone();
-	namedWindow(WINDOW_NAME);
+	imgSent = imgCopy.clone();
+	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
+	rightColumn0->addButton(new Button("save", &saveImage));
+	rightColumn0->addButton(new Button("cancel", &close));
+	std::vector<Rect> faces;
 	Mat frame_gray;
 
 	cvtColor(imgCopy, frame_gray, cv::COLOR_BGR2GRAY);
@@ -186,7 +51,7 @@ void detectAndDisplay(Frame & frame)
 
 	{
 		Point center(faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5);
-		ellipse(imgCopy, center, Size(faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar(255, 0, 255), 4, 8, 0);
+		ellipse(imgSent, center, Size(faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar(255, 0, 255), 4, 8, 0);
 
 		Mat faceROI = frame_gray(faces[i]);
 		std::vector<Rect> eyes;
@@ -198,23 +63,189 @@ void detectAndDisplay(Frame & frame)
 		{
 			Point center(faces[i].x + eyes[j].x + eyes[j].width*0.5, faces[i].y + eyes[j].y + eyes[j].height*0.5);
 			int radius = cvRound((eyes[j].width + eyes[j].height)*0.25);
-			circle(imgCopy, center, radius, Scalar(255, 0, 0), 4, 8, 0);
+			circle(imgSent, center, radius, Scalar(255, 0, 0), 4, 8, 0);
 		}
 	}
+	frame.setTempImage(imgSent);
+	frame.addSection(rightColumn0);
+	frame.frameToMat();
+}
+
+
+void faceDetection(Frame & src)
+{
+	if (!face_cascade.load(face_cascade_name)) { printf("--(!)Error loading\n"); return; };
+	if (!eyes_cascade.load(eyes_cascade_name)) { printf("--(!)Error loading\n"); return; };
+	detectAndDisplay(src);
+}
+
+void DilaCallBack(Frame &frame, double values, int id)
+
+{
+	int value = (double)values;
+	if (id == 1) {
+		feature = value;
+	}
+	else if (id == 2) {
+		if (value == 0) { type = MORPH_RECT; }
+		else if (value == 1) { type = MORPH_CROSS; }
+		else if (value == 2) { type = MORPH_ELLIPSE; }
+	}
+	else if (id == 3) {
+		sizeF = value;
+	}
+
+	Mat element = getStructuringElement(type, Size(2 * sizeF + 1, 2 * sizeF + 1), Point(sizeF, sizeF));
+
+	if (feature == 0) {
+		erode(imgCopy, imgSent, element);
+	}
+
+	else if (feature == 1) {
+		dilate(imgCopy, imgSent, element);
+	}
+	frame.setTempImage(imgSent);
+}
+
+void dila_Ero(Frame & frame)
+
+{
+	/// Create windows
+	frame.updateImage();
+	frame.getImage(img);
+	imgCopy = img.clone();
+	imgSent = imgCopy.clone();
+	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
+	//namedWindow("Demo");
+	rightColumn0->addTrackbar(new Trackbar("t", 0, 1, 1, 1, 0, &DilaCallBack, 1));
+	rightColumn0->addTrackbar(new Trackbar("Rect/Cross/Ellipse", 0, 2, 1, 1, 0, &DilaCallBack, 2));
+	rightColumn0->addTrackbar(new Trackbar("KernelSize", 0, 21, 1, 1, 0, &DilaCallBack, 3));
+	rightColumn0->addButton(new Button("save", &saveImage));
+	rightColumn0->addButton(new Button("cancel", &close));
+	frame.addSection(rightColumn0);
+	frame.frameToMat();
+}
+void brightnessCallback(Frame &frame,double value, int id)
+{
+	if (id == 1)
+		alpha = value;
+	else
+		beta = value;
+	imgCopy.convertTo(imgSent, img.type(),alpha, beta);
+	frame.setTempImage(imgSent);
+}
+
+void brightness(Frame &frame)
+{
+	alpha = 1;
+	beta = 0;
+	frame.updateImage();
+	frame.getImage(img);
+	imgCopy = img.clone();
+	imgSent = imgCopy.clone();
+	Section* rightColumn0 = new Section(cv::Mat(920, 250, CV_8UC3, Scalar(240, 240, 240)), 3);
+	rightColumn0->addTrackbar(new Trackbar("t", 0, 2, 0.1, 2, 1,&brightnessCallback,1));
+	rightColumn0->addTrackbar(new Trackbar("t", -100, 100, 5, 50, 0,&brightnessCallback,2));
+	rightColumn0->addButton(new Button("save", &saveImage));
+	rightColumn0->addButton(new Button("cancel", &close));
+
+	frame.addSection(rightColumn0);
+	frame.frameToMat();
+}
+
+void saveImage(Frame & frame)
+{
+	frame.modifyImage(imgSent);
+	close(frame);
+}
+
+void close(Frame & frame)
+{
+	frame.updateImage();
+	frame.updateBackground();
+	frame.removeLastRightSection();
+}
+
+void switchImage(Frame & frame)
+{
+	frame.updateBackground();
+}
+
+//void openImage(Frame & frame)
+//{
+//	char const * lFilterPatterns[2] = { "*.jpeg", "*.jpg" };
+//
+//	char const * lTheOpenFileName = tinyfd_openFileDialog(
+//		"let us read the password back",
+//		"",
+//		2,
+//		lFilterPatterns,
+//		NULL,
+//		0);
+//	if (!lTheOpenFileName)
+//	{
+//		tinyfd_messageBox(
+//			"Error",
+//			"Open file name is NULL",
+//			"ok",
+//			"error",
+//			1);
+//		return;
+//	}
+//	string name = "image" + to_string(frame.numberOfImages());
+//	frame.addImage(name, lTheOpenFileName);
+//
+//}
+
+//----------------------------------------------CANNY EDGE DETECTION-------------------------------------------------//
+
+/// Global variables
+
+Mat img_gray;
+Mat detected_edges;
+
+int edgeThresh = 1;
+int lowThreshold = 1;
+int const max_lowThreshold = 100;
+int r = 3;
+int kernel_size = 3;
+
+void cannyEdgeCallBack(int, void*)
+{
+
+	/// Reduce noise with a kernel 3x3
+	blur(img_gray, detected_edges, Size(3, 3));
+
+	/// Canny detector
+	Canny(detected_edges, detected_edges, lowThreshold, lowThreshold*r, kernel_size);
+
+	/// Using Canny's output as a mask, we display our result
+	imgCopy = Scalar::all(0);
+
+	img.copyTo(imgCopy, detected_edges);
 	imshow(WINDOW_NAME, imgCopy);
+}
+
+void cannyEdgeDetection(Frame& frame)
+{
+	frame.updateImage();
+	img;
+	frame.getImage(img);
+	/// Create a matrix of the same type and size as src (for dst)
+	imgCopy.create(img.size(), img.type());
+	/// Convert the image to grayscale
+	cvtColor(img, img_gray, COLOR_BGR2GRAY);
+	namedWindow(WINDOW_NAME);
+	createTrackbar("Min Threshold:", WINDOW_NAME, &lowThreshold, max_lowThreshold, cannyEdgeCallBack);
+
+	cannyEdgeCallBack(0, 0);
+
 	while (!waitKey(0)) {}
-	frame.modifyImage(img);
+	frame.modifyImage(imgCopy);
 	frame.updateBackground();
 	destroyWindow(WINDOW_NAME);
 }
 
-
-void faceDetection(Frame & frame)
-{
-	if (!face_cascade.load(face_cascade_name)) { printf("--(!)Error loading\n"); return; };
-	if (!eyes_cascade.load(eyes_cascade_name)) { printf("--(!)Error loading\n"); return; };
-	detectAndDisplay(frame);
-}
 
 /*
 
@@ -241,68 +272,6 @@ RNG rng(12345);
 
 
 /// -------------------------------------------BRIGHTNESS FUNCTIONS-------------------------------------------
-
-void bright(Mat & img)
-{
-	img.convertTo(img, img.type(), 1, 20);
-}
-
-
-
-void dark(Mat & img)
-{
-	img.convertTo(img, img.type(), 1, -20);
-}
-
-
-
-
-//------------------------------------------DILATATION EROSION-------------------------------------------------//
-
-void dila_Ero(Mat &src)
-
-{
-	/// Create windows
-
-	//namedWindow("Demo");
-createTrackbar("Feature:\n 0: Erosion \n 1: Dilation", "Demo", &feature, max_feature);
-createTrackbar("Element:\n 0: Rect \n 1: Cross \n 2: Ellipse", "Demo", &elem, max_elem);
-createTrackbar("Kernel size:\n 2n +1", "Demo", &sizeF, max_kernel_size);
-
-	while (true)
-	{
-		int type;
-
-		if (elem == 0) { type = MORPH_RECT; }
-
-		else if (elem == 1) { type = MORPH_CROSS; }
-
-		else if (elem == 2) { type = MORPH_ELLIPSE; }
-
-
-
-		Mat element = getStructuringElement(type,Size(2 * sizeF + 1, 2 * sizeF + 1),Point(sizeF, sizeF));
-
-		if (feature == 0) {
-
-			erode(originImage, src, element);
-
-
-		} else if (feature == 1) {
-
-			dilate(originImage, src, element);
-
-
-		}
-		
-
-	}
-
-}
-#include <iostream> 
-
-#include <fstream> 
-
 
 
 //----------------------------------------PANORAMA-------------------------------------------------//
