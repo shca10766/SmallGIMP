@@ -44,42 +44,44 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 		trackBarChanged = true;
 		return;
 	}
-	switch (event)
-	{
-	case EVENT_LBUTTONDOWN:
-		cout << "1";
-		down = true;
-		initialX = x;
-		initialY = y;
-		break;
-	case EVENT_LBUTTONUP:
-		cout << "2";
+	if (h.getX <cX< h.getX2 && h.getY<cY<h.getY2) {
+		switch (event)
+		{
+		case EVENT_LBUTTONDOWN:
+			cout << "1";
+			down = true;
+			initialX = x;
+			initialY = y;
+			break;
+		case EVENT_LBUTTONUP:
+			cout << "2";
 
-		h.addToBackgroundPos(cX, cY);
-		cX = 0;
-		cY = 0;
-		down = false;
-		break;
-	case EVENT_MOUSEMOVE:
-		cout << "3";
+			h.addToBackgroundPos(cX, cY);
+			cX = 0;
+			cY = 0;
+			down = false;
+			break;
+		case EVENT_MOUSEMOVE:
+			cout << "3";
 
-		if (down)
-		{
-			cX = initialX - x;
-			cY = initialY - y;
+			if (down)
+			{
+				cX = initialX - x;
+				cY = initialY - y;
+			}
+			break;
+		case EVENT_MOUSEWHEEL:
+			Size imgSize;
+			if (getMouseWheelDelta(flags) > 0)
+			{
+				h.resizeImagef(1.05);
+			}
+			else
+			{
+				h.resizeImagef(0.95);
+			}
+			break;
 		}
-		break;
-	case EVENT_MOUSEWHEEL:
-		Size imgSize;
-		if (getMouseWheelDelta(flags) > 0)
-		{
-			h.resizeImagef(1.05);
-		}
-		else
-		{
-			h.resizeImagef(0.95);
-		}
-		break;
 	}
 }
 

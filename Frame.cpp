@@ -43,16 +43,28 @@ void Frame::addSection(Section* section)
 
 	}
 }
-
+int Frame::getX() {
+	return x;
+}
+int Frame::getY() {
+	return y;
+}
+int Frame::getX2() {
+	return x2;
+}
+int Frame::getY2() {
+	return y2;
+}
 void Frame::frameToMat()
 {
 	frameButtonList.clear();
+	frameTrackbarList.clear();
 	x = 0;
 	y = 0;
 	x2 = 0;
 	y2 = 0;
-	background(Rect(0.5*background.cols - 0.5*windowSize.width, 0.5*background.rows - 0.5*windowSize.height, windowSize.width, windowSize.height))
-		.copyTo(screen(Rect(0, 0, windowSize.width, windowSize.height)));
+	//background(Rect(0.5*background.cols - 0.5*windowSize.width, 0.5*background.rows - 0.5*windowSize.height, windowSize.width, windowSize.height))
+	//	.copyTo(screen(Rect(0, 0, windowSize.width, windowSize.height)));
 	for(auto s : header)
 	{
 		resize(s->imageBackground, s->imageBackground, Size(windowSize.width, s->imageBackground.rows));
@@ -78,7 +90,8 @@ void Frame::frameToMat()
 	{
 		resize(s->imageBackground, s->imageBackground, Size(s->imageBackground.cols, windowSize.height - y - y2));
 		s->imageBackground.copyTo(screen(Rect(windowSize.width - x2 - s->imageBackground.cols, y, s->imageBackground.cols, s->imageBackground.rows)));
-		s->showAllButton(frameButtonList, x, y, s->imageBackground.size(),0);
+		s->showAllButton(frameButtonList, windowSize.width - x2 - s->imageBackground.cols, y, s->imageBackground.size(),3);
+		s->renderAllTracbar(screen, frameTrackbarList, Rect(windowSize.width - x2 - s->imageBackground.cols, y, s->imageBackground.cols,s->imageBackground.rows));
 		x2 += s->imageBackground.cols;
 	}
 	for(auto s : contentHeader)
@@ -111,11 +124,11 @@ void Frame::frameToMat()
 		textSize = getTextSize(b->getName(), font, scale, thickness, baseline);
 		putText(screen, b->getName(),Point(b->getX()+0.5*b->getSize().width-0.5*textSize.width, b->getY() + 0.6*b->getSize().height),font, scale, Scalar(0, 0, 0), thickness);
 	}
-
+	imageArea = Rect(x, y, windowSize.width - x - x2, windowSize.height - y - y2);
 	if (images.size() != 0)
 	{
-		image.copyTo(background(Rect(imageX + backgroundX, imageY + backgroundY, imageSize.width, imageSize.height)));
-		background(Rect(backgroundX, backgroundY, windowSize.width - x - x2, windowSize.height - y - y2)).copyTo(screen(Rect(x, y, windowSize.width - x - x2, windowSize.height - y - y2)));
+		updateBackground();
+		background(Rect(backgroundX, backgroundY, windowSize.width - x - x2, windowSize.height - y - y2)).copyTo(screen(imageArea));
 	}
 
 	//images[currentImage].second[0](Rect(x, y2, windowSize.width, windowSize.height)).copyTo(screen(Rect(0, 0, windowSize.width, windowSize.height)));
@@ -157,7 +170,7 @@ bool Frame::updateAllbuttons(int _x,int _y,int eventType)
 			}
 			else if (eventType == EVENT_LBUTTONUP)
 			{
-				b->doFunction(*this);
+				b->setState(true);
 			}
 			else if (eventType == EVENT_MOUSEMOVE)
 			{
@@ -182,6 +195,38 @@ bool Frame::updateAllbuttons(int _x,int _y,int eventType)
 			putText(screen, currentButton->getName(), Point(currentButton->getX() + 0.5*currentButton->getSize().width - 0.5*textSize.width, currentButton->getY() + 0.6*currentButton->getSize().height), font, scale, Scalar(0, 0, 0), thickness);
 			currentButton = nullptr;
 		}
+	}
+	return false;
+}
+
+bool Frame::updateAllTrackbar(int _x, int _y, int eventType)
+{
+	if (eventType == EVENT_LBUTTONDOWN)
+	{
+		for (auto t : frameTrackbarList)
+		{
+			if (t->isInside(_x, _y))
+			{
+				currentTrackbar = t;
+				return true;
+			}
+		}
+	}
+	else if (!currentTrackbar)
+	{
+		return false;
+	}
+	else if (eventType == EVENT_LBUTTONUP)
+	{
+		currentTrackbar = nullptr;
+		return true;
+
+	}
+	else if (eventType == EVENT_MOUSEMOVE)
+	{
+		int a;
+		currentTrackbar->positionValue(_x, _y);
+		return true;
 	}
 	return false;
 }
@@ -212,6 +257,14 @@ void Frame::setImage(int i)
 	currentImage = i;
 	image = images[currentImage].second[images[currentImage].second.size() - 1].clone();
 	imageSize = Size(image.cols, image.rows);
+}
+
+void Frame::setCoordinates(int x, int y, int x2, int y2) {
+
+}
+void Frame::setTempImage(Mat & img)
+{
+	image = img;
 }
 
 int Frame::getBackgroundX()
@@ -266,6 +319,26 @@ void Frame::centerImage()
 	backgroundY = BY;
 }
 
+void Frame::doPressedButton()
+{
+	for (auto b : frameButtonList)
+	{
+		if (b->isPressed)
+		{
+			b->doFunction(*this);
+			return;
+		}
+	}
+}
+
+void Frame::updateTrackbar()
+{
+	if (!currentTrackbar)
+		return;
+	currentTrackbar->callfunc(*this);
+	frameToMat();
+}
+
 void Frame::undo()
 {
 	if (images[currentImage].second.size() < 2)
@@ -284,6 +357,19 @@ int Frame::numberOfImages()
 {
 	return images.size();
 }
+
+void Frame::removeLastRightSection()
+{
+	Section* del;
+	if (rightColumn.size() == 0)
+		return;
+	
+	rightColumn.pop_back();
+	frameToMat();
+	return;
+}
+
+
 
 
 
