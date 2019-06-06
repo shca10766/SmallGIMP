@@ -1,6 +1,5 @@
 #include "Button.h"
 
-
 Button::Button()
 {
 
@@ -44,12 +43,13 @@ Button::~Button()
 {
 }
 
+// do the function
 void Button::doFunction(Frame & frame)
 {
 	if (imgSwitch)
 	{
 		auto f = frame.getImages();
-		for (unsigned i(0);i<frame.numberOfImages();i++)
+		for (int i(0);i<frame.getNumberOfImages();i++)
 		{
 			if (f[i].first == name)
 			{
@@ -62,6 +62,7 @@ void Button::doFunction(Frame & frame)
 	(*pointerfunc)(frame);
 }
 
+// Set the button position
 void Button::setPosition(int _x, int _y, int _width, int _height)
 {
 	x = _x;
@@ -75,6 +76,7 @@ bool Button::isAutomatic()
 	return automatic;
 }
 
+// return whether _x,_y is inside the button
 bool Button::isInside(int _x, int _y)
 {
 	return ((_x > x) && (_x < x + width) && (_y > y) && (_y < y + height));

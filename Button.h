@@ -1,15 +1,17 @@
 #pragma once
 #include "opencv2/core.hpp"
-#include <string>
+
 #include "imageFunction.h"
 #include "Frame.h"
+
+#include <string>
 
 using namespace std;
 using namespace cv;
 
 class Frame;
 
-
+//Button class
 class Button
 {
 private:

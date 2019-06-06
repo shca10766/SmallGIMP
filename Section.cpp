@@ -75,6 +75,7 @@ void Section::addButton(Button * b)
 	buttonList.push_back(b);
 }
 
+// Gives each button their position and size
 void Section::showAllButton(vector<Button*>& frameButtonList,int imageX,int imageY,Size size,int s=0)
 {
 	int buttonWidthX = min(size.width*0.8, size.height*0.8);
@@ -120,6 +121,7 @@ void Section::addTrackbar(Trackbar * t)
 	trackbarList.push_back(t);
 }
 
+// gives each trackbar their position and size
 void Section::renderAllTracbar(Mat & mat, vector<Trackbar*>& frameTrackbarList, Rect pos)
 {
 	Rect tpos = pos;

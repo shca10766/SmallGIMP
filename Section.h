@@ -12,13 +12,13 @@ using namespace std;
 class Button;
 class Trackbar;
 
+// Each "part" of the frame is a section. Can contain button and trackbar
 class Section
 {
 public:
 	Mat imageBackground;
 	int type; // 0: header, 1: footer, 2: leftColumn, 3: rightColumn, 4:contentHeader, 5: contentFooter
 	Size size;
-	bool scalable;
 	vector<Button*> buttonList;
 	vector<Trackbar*> trackbarList;
 

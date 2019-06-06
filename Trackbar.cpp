@@ -1,7 +1,5 @@
 #include "Trackbar.h"
 
-
-
 Trackbar::Trackbar()
 {
 }
@@ -31,11 +29,12 @@ void Trackbar::render(Mat &mat, Rect area)
 	update();
 }
 
+// draw the trackbar
 void Trackbar::update()
 {
 	double scale = 0.4;
 	int font = cv::FONT_HERSHEY_SIMPLEX;
-	int thickness = 1.5;
+	int thickness = 1;
 	int* baseline = 0;
 	Size textSize;
 	ostringstream str;
@@ -76,6 +75,7 @@ void Trackbar::update()
 	needRefresh = false;
 }
 
+// update the value of the trackbar according to the mouse position
 void Trackbar::positionValue(int x, int y)
 {
 	double a = max(min(((maxValue - minValue) * (x - pos.x)/(pos.width))+minValue,maxValue),minValue);
@@ -83,7 +83,6 @@ void Trackbar::positionValue(int x, int y)
 	{
 		if ((a >= (b - step * 0.5)) && (a <= (b + step * 0.5)))
 		{
-			cout << "trackbar : " << b << endl;
 			changeValue(b);
 			needRefresh = true;
 			return;
@@ -101,6 +100,7 @@ double Trackbar::getValue()
 	return currentValue;
 }
 
+// return whether _x,_y is inside the trackbar
 bool Trackbar::isInside(int x, int y)
 {
 	return ((x > pos.x) && (x < pos.x + pos.width) && (y > pos.y-15) && (y < pos.y + pos.height+15));
@@ -108,7 +108,6 @@ bool Trackbar::isInside(int x, int y)
 
 void Trackbar::callfunc(Frame & frame)
 {
-	cout << "VALEUR" << currentValue << endl;
 	(*pointerfunc)(frame, currentValue, id);
 }
 

@@ -13,47 +13,20 @@ Frame::Frame(int _width,int _height)
 	background = cv::Mat(10000, 10000, CV_8UC3, Scalar(255, 255, 255));
 }
 
-
 Frame::~Frame()
 {
 }
 
-void Frame::addSection(Section* section)
-{
-	switch (section->type)
-	{
-		case 0:
-			header.push_back(section);
-			return;
-		case 1:
-			footer.push_back(section);
-			return;
-		case 2:
-			leftColumn.push_back(section);
-			return;
-		case 3:
-			rightColumn.push_back(section);
-			return;
-		case 4:
-			contentHeader.push_back(section);
-			return;
-		case 5:
-			contentFooter.push_back(section);
-			return;
-
-	}
-}
 
 void Frame::frameToMat()
 {
 	frameButtonList.clear();
 	frameTrackbarList.clear();
-	x = 0;
-	y = 0;
-	x2 = 0;
-	y2 = 0;
-	//background(Rect(0.5*background.cols - 0.5*windowSize.width, 0.5*background.rows - 0.5*windowSize.height, windowSize.width, windowSize.height))
-	//	.copyTo(screen(Rect(0, 0, windowSize.width, windowSize.height)));
+	int x = 0;
+	int y = 0;
+	int x2 = 0;
+	int y2 = 0;
+	//background(Rect(0.5*background.cols - 0.5*windowSize.width, 0.5*background.rows - 0.5*windowSize.height, windowSize.width, windowSize.height)).copyTo(screen(Rect(0, 0, windowSize.width, windowSize.height)));
 	for(auto s : header)
 	{
 		resize(s->imageBackground, s->imageBackground, Size(windowSize.width, s->imageBackground.rows));
@@ -103,7 +76,7 @@ void Frame::frameToMat()
 
 	double scale = 0.4;
 	int font = cv::FONT_HERSHEY_SIMPLEX;
-	int thickness = 1.5;
+	int thickness = 1;
 	int* baseline=0;
 	Size textSize;
 	for (auto b : frameButtonList)
@@ -123,12 +96,72 @@ void Frame::frameToMat()
 	//images[currentImage].second[0](Rect(x, y2, windowSize.width, windowSize.height)).copyTo(screen(Rect(0, 0, windowSize.width, windowSize.height)));
 }
 
-bool Frame::updateAllbuttons(int _x,int _y,int eventType)
+
+void Frame::addSection(Section* section)
+{
+	switch (section->type)
+	{
+		case 0:
+			header.push_back(section);
+			return;
+		case 1:
+			footer.push_back(section);
+			return;
+		case 2:
+			leftColumn.push_back(section);
+			return;
+		case 3:
+			rightColumn.push_back(section);
+			return;
+		case 4:
+			contentHeader.push_back(section);
+			return;
+		case 5:
+			contentFooter.push_back(section);
+			return;
+
+	}
+}
+
+void Frame::addImage(String name, String path)
+{
+	contentHeader[0]->addButton(new Button(name, &switchImage,true));
+	vector<Mat> temp;
+	temp.push_back(imread(path));
+	images.push_back(make_pair(name, temp));
+	setImage(images.size() - 1);
+	updateBackground();
+	frameToMat();
+}
+
+Mat Frame::getFrame()
+{
+	return screen;
+}
+
+
+void Frame::update(int cX,int cY)
+{
+	background(Rect(backgroundX + cX, backgroundY + cY, imageArea.width, imageArea.height)).copyTo(screen(Rect(imageArea.x, imageArea.y, imageArea.width, imageArea.height)));
+}
+
+void Frame::updateImage()
+{
+	setImage(currentImage);
+}
+
+void Frame::updateBackground()
+{
+	background.setTo(Scalar(255, 255, 255));
+	image.copyTo(background(Rect(imageX + backgroundX, imageY + backgroundY, imageSize.width, imageSize.height)));
+}
+
+bool Frame::updateAllButtons(int _x,int _y,int eventType)
 {
 	Mat buttonMat;
 	double scale = 0.4;
 	int font = cv::FONT_HERSHEY_SIMPLEX;
-	int thickness = 1.5;
+	int thickness = 1;
 	int* baseline = 0;
 	Size textSize;
 	for (auto b : frameButtonList)
@@ -213,33 +246,13 @@ bool Frame::updateAllTrackbar(int _x, int _y, int eventType)
 	}
 	else if (eventType == EVENT_MOUSEMOVE)
 	{
-		int a;
 		currentTrackbar->positionValue(_x, _y);
 		return true;
 	}
 	return false;
 }
 
-void Frame::addImage(String name, String path)
-{
-	contentHeader[0]->addButton(new Button(name, &switchImage,true));
-	vector<Mat> temp;
-	temp.push_back(imread(path));
-	images.push_back(make_pair(name, temp));
-	setImage(images.size() - 1);
-	updateBackground();
-	frameToMat();
-}
 
-Mat Frame::getFrame()
-{
-	return screen;
-}
-
-void Frame::getImage(Mat& img)
-{
-	img = image;
-}
 
 void Frame::setImage(int i)
 {
@@ -254,31 +267,22 @@ void Frame::setTempImage(Mat & img)
 	imageSize = Size(image.cols, image.rows);
 }
 
-int Frame::getBackgroundX()
+void Frame::centerImage()
 {
-	return backgroundX;
+	backgroundX = BX;
+	backgroundY = BY;
 }
 
-int Frame::getBackgroundY()
+void Frame::modifyImage(Mat img)
 {
-	return backgroundY;
+	images[currentImage].second.push_back(img);
+	updateImage();
 }
 
 void Frame::addToBackgroundPos(int x, int y)
 {
 	backgroundX += x;
 	backgroundY += y;
-}
-
-void Frame::update(int cX,int cY)
-{
-	background(Rect(backgroundX + cX, backgroundY + cY, windowSize.width - x - x2, windowSize.height - y - y2)).copyTo(screen(Rect(x, y, windowSize.width - x - x2, windowSize.height - y - y2)));
-}
-
-void Frame::updateBackground()
-{
-	background.setTo(Scalar(255, 255, 255));
-	image.copyTo(background(Rect(imageX + backgroundX, imageY + backgroundY, imageSize.width, imageSize.height)));
 }
 
 void Frame::resizeImagef(float f)
@@ -289,22 +293,16 @@ void Frame::resizeImagef(float f)
 	updateBackground();
 }
 
-void Frame::updateImage()
+void Frame::undo()
 {
-	setImage(currentImage);
-}
-
-void Frame::modifyImage(Mat img)
-{
-	images[currentImage].second.push_back(img);
+	if (images[currentImage].second.size() < 2)
+		return;
+	images[currentImage].second.erase(images[currentImage].second.end() - 1);
 	updateImage();
+	updateBackground();
 }
 
-void Frame::centerImage()
-{
-	backgroundX = BX;
-	backgroundY = BY;
-}
+
 
 void Frame::doPressedButton()
 {
@@ -326,31 +324,12 @@ void Frame::updateTrackbar()
 	frameToMat();
 }
 
-void Frame::undo()
-{
-	if (images[currentImage].second.size() < 2)
-		return;
-	images[currentImage].second.erase(images[currentImage].second.end() - 1);
-	updateImage();
-	updateBackground();
-}
 
-vector<pair<String, vector<Mat>>> Frame::getImages()
-{
-	return images;
-}
-
-int Frame::numberOfImages()
-{
-	return images.size();
-}
 
 void Frame::removeLastRightSection()
 {
-	Section* del;
 	if (rightColumn.size() == 0)
 		return;
-	
 	rightColumn.pop_back();
 	frameToMat();
 	return;
@@ -359,6 +338,33 @@ void Frame::removeLastRightSection()
 int Frame::rightSectionLength()
 {
 	return rightColumn.size();
+}
+
+
+
+void Frame::getImage(Mat& img)
+{
+	img = image;
+}
+
+int Frame::getBackgroundX()
+{
+	return backgroundX;
+}
+
+int Frame::getBackgroundY()
+{
+	return backgroundY;
+}
+
+vector<pair<String, vector<Mat>>> Frame::getImages()
+{
+	return images;
+}
+
+int Frame::getNumberOfImages()
+{
+	return images.size();
 }
 
 Size Frame::getSize()

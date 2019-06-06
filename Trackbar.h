@@ -8,6 +8,7 @@ using namespace cv;
 
 class Frame;
 
+// Trackbar class
 class Trackbar
 {
 public:
